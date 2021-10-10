@@ -1,0 +1,29 @@
+<!--index.wxml-->
+
+<view class= "title">Ucats</view>
+<text> \n </text>
+
+<navigator url="/pages/about/web/web">
+<view style="display:flex; justify-content:center; align-items:center;">
+  <image mode="widthFix" src="/pages/images/ucats.jpg" style= "width: 90%;">
+  </image>
+</view>
+</navigator>
+
+<text> \n </text>
+
+<!-- 最好能保留这一行 -->
+<view class="body"><text class = "bodybold">logo说明：</text>Ucats，国科大简称UCAS和猫咪cat的组合而成，寓意国科大的猫咪们。中间Cat配色取自胖橘。</view>
+<text> \n </text>
+
+<view class="body">此小程序源代码来自于北大猫协，国科大吃喝玩乐学团队做了相应修改。所有代码开源，可在 GitHub 上搜索「北大猫协」，配有教学视频，简单易用。 </view>
+<text> \n </text>
+
+<view class="staff">2021-10-10</view>
+
+<view class="staff">
+<text>致敬小程序源代码开发者circle\n</text>
+国科大吃喝玩乐学团队
+</view>
+<text> \n </text>
+

@@ -1,0 +1,28 @@
+<view class="navbar">
+  <text wx:for="{{navbar}}" data-idx="{{index}}" class="item {{currentTab==index ? 'active' : ''}}" wx:key="unique" bindtap="navbarTap">{{item}}</text>
+</view>
+
+<view hidden="{{currentTab!==0}}">
+
+  <view class="head1">待开发 </view>
+
+  <view class="body">待开发 </view>
+
+
+</view>
+
+<view hidden="{{currentTab!==1}}">
+
+</view>
+
+<view hidden="{{currentTab!==2}}">
+</view>
+
+<view hidden="{{currentTab!==3}}">
+</view>
+
+
+<view hidden="{{currentTab!==4}}">
+
+
+</view>
