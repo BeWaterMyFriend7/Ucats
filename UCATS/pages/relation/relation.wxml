@@ -1,0 +1,21 @@
+<!--index.wxml-->
+
+<view class= "title">Ucats</view>
+
+<view style="display:flex; justify-content:center; align-items:center;">
+<image class='img' mode="widthFix" src='/pages/images/relation.png' bindtap="preview" data-src="/pages/images/relation.png">
+</image>
+</view>
+<view class="contentyd">点击图片可放大</view>
+
+
+<view class="body">由于小程序流量限制，这里不能展示高清大图，高清大图可以通过链接查看：
+ </view>
+
+<view class="copy">
+  <view bindtap="copyText" data-text ="https://docs.qq.com/pdf/DYk56RVZ2TXRsbEtW?"> 点我复制链接 在浏览器打开 </view>
+</view>
+
+<text> \n </text>
+
+
