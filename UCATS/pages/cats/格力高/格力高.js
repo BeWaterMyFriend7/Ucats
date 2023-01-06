@@ -20,7 +20,7 @@ catname:"格力高",
 {category:"外貌",
  content:" 短毛橘白，头顶至尾巴橘色，其它地方白色",},
 {category:"关系",
- content:" 菜菜的兄弟 也疑似 憨八嘎 蛋卷的兄弟",},
+ content:" 😸菜菜的兄弟 | 😸😸也疑似 憨八嘎 蛋卷的兄弟",},
 
 ], 
 url: app.globalData.url,

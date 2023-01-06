@@ -86,6 +86,35 @@
       }
     })
   },
+  baidu:function(){
+    var path = 'pages/netdisk_share/share?surl=120wJZMiVDM0jQbtXbtkMAA&to=share';
+    wx.navigateToMiniProgram({
+      appId: 'wxdcd3d073e47d1742',
+      path: path,
+      extraData: {
+        foo: 'bar'
+      },
+      envVersion: 'release',   //默认为正式版，咱们提取网盘资料，这里就正式版，如果是自己开发的两个小程序，可以选择"develop" 开发板    "trial" 体验版 "release" 正式版
+      success(res) {
+        // 打开成功
+      }
+    })
+  },
+  copyText: function(e){
+    console.log(e)
+    wx.setClipboardData({
+      data: e.currentTarget.dataset.text,
+      success: function(res) {
+        wx.getClipboardData({
+          success: function (res) {
+            wx.showToast({
+              title: '复制成功',
+            })
+          }
+        })
+      }
+    })
+  }
 
 })
 

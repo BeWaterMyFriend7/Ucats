@@ -16,7 +16,7 @@ catname:"脸谱",
 {category:"性格",
  content:" 亲人可抱",},
 {category:"外貌",
- content:" 花纹橘猫 白围脖 与一点白的区别是嘴巴两侧都是橘色",},
+ content:" 花纹橘猫。白围脖，与一点白的区别是嘴巴两侧都是橘色",},
 {category:"关系",
  content:" 爆米花、一点白的兄弟",},
 

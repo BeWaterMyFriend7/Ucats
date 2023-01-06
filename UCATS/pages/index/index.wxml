@@ -79,8 +79,14 @@
   <!--链接：https://pan.baidu.com/s/1UL_j0-KXzyGqUJEclTzSrw?pwd=heoo 
   提取码：heoo 
   --来自百度网盘超级会员V1的分享-->
+  <!--
     <view class="copy">
     <view bindtap="copyText" data-text ="https://pan.baidu.com/s/1UL_j0-KXzyGqUJEclTzSrw?pwd=heoo"> 点我复制链接 在浏览器打开 </view>
+    </view>
+    -->
+    
+    <view class="copy">
+    <view bindtap="baidu"> 点我跳转到百度网盘小程序，查看更多可爱猫猫图片 </view>
     </view>
 
   <view class="body">

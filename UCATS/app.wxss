@@ -146,6 +146,7 @@
 .cat_image {
   border-radius: 10rpx;
   overflow: hidden;
+  height:auto;
 }
 
 .cat-card {
@@ -171,4 +172,5 @@
 .adContainer ad {
   width:100%;
 }
+
 

@@ -15,7 +15,7 @@
     <text>\n\n</text>
     或许你的短视频APP常驻可爱的猫猫狗狗，“大狸子鱼”、“三号楼”、“奶油凉皮油条……”你耳熟能详。
     <text>\n\n</text>
-    或许此时你的身旁就有一只两只可爱的毛孩子，它抬起头睁大眼睛望着你的时候，它要月亮你都给它摘下来。
+    或许此时你的身旁就有一只两只甚至更多的可爱毛孩子，它抬起头睁大眼睛望着你的时候，如果此时它要月亮，你也一定会答应。
     <text>\n\n</text>
     或许你经常投喂在果壳的毛孩子们，它们被你喂得圆圆滚滚，忍饥挨饿的苦一点都没受。
     <text>\n\n</text>
@@ -31,6 +31,9 @@
     <text>\n\n</text>
     <text class="bodybold">另外，一些食物可能并不适合猫猫</text>，例如巧克力，请尽量投喂猫粮、猫罐头等
     <text>\n\n</text>
+    <text class="bodybold">最后，欢迎加入我们，</text>我们一起改善流浪猫猫的生活环境、协调人猫关系。
+    果壳校园里撸猫铲屎，来不来🐱🐱🐱
+    <text>\n\n</text>
   </view>
  
 
@@ -39,7 +42,7 @@
   <text>\n\n</text>
   <view class="body">
     <text class="bodybold">首先和你说声 “对不起”，我代表它们向你道歉。</text>它们可能出于生存繁衍的本能，一些行为对你造成了干扰。我们一直在做着绝育、领养等减少流浪猫猫数量以及猫德教育等协调人猫关系的工作，但精力有限，未能完全教育它们。我们今后会努力的，请给我们些许时间。<text>\n\n</text>
-    <text class="bodybold">希望你能理解这群毛孩子。</text>它们也是果壳里的一部分，也是一个可爱的生命，希望你能接受它们的存在。如果你能试着和它交朋友，或许会有不一样的火花。<text>\n</text>
+    <text class="bodybold">希望你能理解这群毛孩子。</text>它们也是果壳里的一部分，也是一个可爱的生命，希望你能接受它们的存在。如果你能试着和它交朋友，或许会有不一样的火花。<text>\n\n</text>
     <text class="bodybold">再次和你说声抱歉，希望你能理解。</text>
     <text>\n\n</text>
   </view>
@@ -55,25 +58,33 @@
 <view hidden="{{currentTab!==1}}">
   <text> \n</text>
   <view class="head2">2019年</view>
-  <view class="body">一名果壳师兄[黎啸]首次组织起来了果壳流浪猫猫喂养救助团队，开启了果壳猫猫投喂、生病救助、绝育、领养、募捐系列活动。</view>
+  <view class="body">一名果壳师兄[黎啸]<text class="bodybold">首次组织</text>起来了果壳流浪猫猫喂养救助团队，开启了果壳猫猫投喂、生病救助、绝育、领养、募捐系列活动。</view>
+  <text> \n</text>
 
   <view class="head2">2020年——2021年</view>
   <view class="body">果壳救助活动一直在持续，虽然有的时候人员很少，但流浪动物救助一直在进行。这期间我们一直在尝试与校方沟通，试图让团队正规化。</view>
+  <text> \n</text>
 
   <view class="head2">2021年10月</view>
-  <view class="body">Ucats小程序1.0版本正式上线。国科大吃喝玩乐学团队基于北大猫协小程序源代码开发了Ucats小程序。但由于开发人员精力有限，小程序只收录了7只猫咪，并在维护了一个月之后没有再度更新。同时小程序于2022年9月服务完全终止。</view>
+  <view class="body"><text class="bodybold">Ucats小程序1.0</text>正式上线。国科大吃喝玩乐学团队基于北大猫协小程序源代码开发了Ucats小程序。但由于开发人员精力有限，小程序只收录了7只猫咪，并在维护了一个月之后没有再度更新。同时小程序于2022年9月服务完全终止。</view>
+  <text> \n</text>
 
   <view class="head2">2022年9月</view>
   <view class="body">国科大吃喝玩乐学团队正式联系上了果壳猫协，一起规划果壳动物保护的发展，Ucats小程序的重新开发也被提上日程。</view>
+  <text> \n</text>
 
   <view class="head2">2022年秋季学期</view>
-  <view class="body">果壳猫协团队一直在行动，这学期共绝育并送养了10只猫猫和一只狗狗。这一系列的费用大部分来自于果壳er的爱心捐赠，其中也有不少毛孩子的费用都是果壳er自掏腰包解决的。同时，这学期我们也组织了日常投喂、病猫救助、猫窝搭建等活动。另外，这学期我们尝试了果壳流浪动物的文创产品制作与义卖。</view>
+  <view class="body">果壳猫协团队一直在行动，这学期共<text class="bodybold">绝育并送养了10只猫猫和一只狗狗</text>。这一系列的费用大部分来自于果壳er的爱心捐赠，其中也有不少毛孩子的费用都是果壳er自掏腰包解决的,感谢各位果壳er们的支持。同时，这学期我们也组织了日常投喂、病猫救助、猫窝搭建等活动。另外，这学期我们尝试了果壳流浪动物的文创产品制作与义卖。</view>
+  <text> \n</text>
 
   <view class="head2">2023年1月</view>
-  <view class="body">Ucats小程序重新开发，将目前活跃在果壳的大部分猫咪登记入册。并增加了猫猫关系新版块，同时更新了logo。</view>
- 
+  <view class="body"><text class="bodybold">Ucats小程序重新开发</text>，将目前活跃在果壳的大部分猫咪登记入册。并增加了猫猫关系新版块，同时更新了logo。</view>
+  <text> \n</text>
+  
   <view class="head2">未来在路上</view>
-  <view class="body">果壳流浪动物救助方面，我们会一直进行下去，争取早日完成所有果壳流量动物的NTR。小程序方面，由于开发人员精力有限，暂定月更。</view>
+  <view class="body">果壳流浪动物救助方面，我们会一直进行下去，争取早日完成所有果壳流浪动物的NTR。
+    <text> \n </text>
+  小程序方面，由于开发人员精力有限，前端技术也并不是很熟悉，因此暂定月更。</view>
 
   <text> \n </text>
 
@@ -82,24 +93,25 @@
 <!--关于我们-->
 <view hidden="{{currentTab!==2}}">
  <!--<view class= "title">Ucats</view>-->
-<view style="display:flex; justify-content:center; align-items:center;">
-  <image mode="widthFix" src="/pages/images/huihui.jpg" style= "width: 80%;">
-  </image>
-</view>
+
 
 <text> \n </text>
 
 <view class="body">
-果壳猫协是国科大雁栖湖校区的果壳er<text class="bodybold">自发组织的一个主要面向流浪猫猫救助的团队。</text>
+[果壳猫协]是国科大雁栖湖校区的果壳er<text class="bodybold">自发组织的一个主要面向流浪猫猫救助的团队。</text>
 <text>\n\n</text>
-果壳猫协致力于改善目前校园内以流浪猫猫为代表的一众流浪动物的生活环境，完成它们的
+[果壳猫协]致力于改善目前校园内以流浪猫猫为代表的一众流浪动物的生活环境，完成它们的
 <text class="bodybold">投喂、疾病救助、绝育、领养以及由此产生的募捐和文创义卖等活动</text>，以此
 <text class="bodybold">减少果壳流浪动物数量、进而减少流浪动物对于生态影响、协调人猫关系。</text>
 <text>\n\n</text>
 果壳校园内也有一定数量的<text class="bodybold">流浪狗狗</text>，但由于狗狗体型较大、如果不亲人很难完成捕捉进行绝育，因此目前果壳猫协主要以猫猫救助为主。
 </view>
 
-<text> \n </text>
+
+<view style="display:flex; justify-content:center; align-items:center;">
+  <image mode="widthFix" src="/pages/images/huihui.jpg" style= "width: 70%;">
+  </image>
+</view>
 
 <view class="head2">关于 logo </view>
 <text> \n </text>
@@ -123,7 +135,16 @@
 </view>
 <view class="contentyd">点击并长按上面二维码图片关注[国科大吃喝玩乐学]，你可以了解关于国科大的一切。选课、学习经验、科研软件、卖室友等更多干货等你来~</view>
 
-<text> \n </text>  
+<text> \n </text>
+<view class="body">
+任何有关果壳猫猫、狗狗等流浪动物的问题都可以联系我们。
+<text> \n\n </text>
+任何相关问题和建议也都可以随时联系我们，我们看到会及时回复的。
+<text> \n\n </text>
+当然，更欢迎充满爱心的你加入我们。
+
+</view>
+
 <view class="body">此小程序基于北大猫协小程序开发，可在 GitHub 上搜索「北大猫协」，配有教学视频，简单易用。致敬原作者Circle </view>
 
 

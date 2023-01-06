@@ -18,7 +18,7 @@ catname:"白围巾",
 {category:"外貌",
  content:" 橘猫 显著白围巾特征",},
 {category:"关系",
- content:" 丑丑的孩子; 亲人小橘、白围巾是同一窝的兄弟姐妹，是小三花的姐姐",},
+ content:" 😸丑丑的孩子 | 😸😸亲人小橘、白围巾是同一窝的兄弟姐妹 | 😸😸😸小三花的姐姐",},
 
 ], 
 url: app.globalData.url,

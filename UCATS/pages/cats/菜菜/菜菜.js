@@ -18,7 +18,7 @@ catname:"菜菜",
 {category:"外貌",
  content:" 短毛橘白，头顶至尾巴橘色，其它地方白色，和格力高的区别是背部花色",},
 {category:"关系",
- content:" 格力高的兄弟 也疑似 憨八嘎 蛋卷的兄弟",},
+ content:" 😸格力高的兄弟 | 😸😸也疑似 憨八嘎 蛋卷的兄弟",},
 
 ], 
 url: app.globalData.url,

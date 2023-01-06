@@ -18,7 +18,7 @@ catname:"长毛黑点",
 {category:"送养时间",
  content:" 2022年11月1号",},
 {category:"外貌",
- content:" 长毛奶牛，白微博白手套白口罩，鼻子左侧标志性一个黑点",},
+ content:" 长毛奶牛，白围脖、白手套、白口罩，鼻子左侧标志性一个黑点 ·",},
 
 ], 
 url: app.globalData.url,

@@ -12,8 +12,13 @@
 <view class="body">由于小程序流量限制，这里不能展示高清大图，高清大图可以通过链接查看：
  </view>
 
+<!--
 <view class="copy">
   <view bindtap="copyText" data-text ="https://docs.qq.com/pdf/DYk56RVZ2TXRsbEtW?"> 点我复制链接 在浏览器打开 </view>
+</view>
+-->
+<view class="copy">
+  <view bindtap="tencentdoc"> 点我跳转到腾讯文档小程序，查看高清大图 </view>
 </view>
 
 <text> \n </text>
