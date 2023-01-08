@@ -1,3 +1,6 @@
+    imgList:[
+    "/pages/images/QR1.png"
+  ],
     screenWidth: 0,
     screenHeight: 0,
     imgwidth: 0,
@@ -113,6 +116,14 @@
           }
         })
       }
+    })
+  },
+  preview(e){
+    console.log(e.currentTarget.dataset.src)
+    let currentUrl = e.currentTarget.dataset.src
+    wx.previewImage({
+      current: currentUrl,
+      urls: this.data.imgList
     })
   }
 

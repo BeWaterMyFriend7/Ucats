@@ -54,7 +54,7 @@
 <block wx:for="{{nums}}">
 
   <view style="display:flex; justify-content:center; align-items:center;">
-    <image mode="widthFix" class="cat_image" src="{{url}}{{catname}}{{item.num}}.jpg" style="width: 75%;">
+    <image mode="widthFix" class="cat_image" src="{{url}}{{catname}}{{item.num}}.jpg" style="width: 60%;">
     </image>
   </view>
 

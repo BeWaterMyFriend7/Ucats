@@ -2,7 +2,7 @@ var app = getApp()
  Page({
 data: { 
  catlist: [
-{ name:"刘海妈"},{ name:"菜菜"},{ name:"蛋卷"},{ name:"脸谱"},{ name:"一点白"},{ name:"脸脸"},{ name:"大三花"},{ name:"丑丑"},{ name:"小三花"},{ name:"mini脸脸"},{ name:"小白"},{ name:"异瞳白"},{ name:"小黑"},
+{ name:"刘海妈"},{ name:"菜菜"},{ name:"蛋卷"},{ name:"脸谱"},{ name:"一点白"},{ name:"汉堡"},{ name:"脸脸"},{ name:"大三花"},{ name:"丑丑"},{ name:"小三花"},{ name:"mini脸脸"},{ name:"小白"},{ name:"异瞳白"},{ name:"小黑"},
     ],
     screenWidth: 0,
     screenHeight: 0,

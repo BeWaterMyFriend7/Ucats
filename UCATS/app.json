@@ -20,6 +20,8 @@
     "pages/cats/脸谱/脸谱",
     "pages/cats/一点白/一点白",
     "pages/cats/爆米花/爆米花",
+    "pages/cats/汉堡/汉堡",
+    "pages/cats/贴地走/贴地走",
     "pages/cats/小白/小白",
     "pages/cats/异瞳白/异瞳白",
     "pages/cats/长毛黑点/长毛黑点",
@@ -34,8 +36,8 @@
     
     "pages/about/about",
     "pages/logs/logs",
-    "pages/science/science",
     "pages/relation/relation",
+    "pages/science/science",
     "pages/index/玳瑁及三花/玳瑁及三花",
     "pages/index/橘猫及橘白/橘猫及橘白",
     "pages/index/纯色/纯色",

@@ -46,7 +46,7 @@ Page({
     })
   },
   tencentdoc:function(){
-    var path = 'pages/detail/detail?qqdocurl=https%3A%2F%2Fdocs.qq.com%2Fpdf%2FDYk56RVZ2TXRsbEtW&iconurl=https%3A%2F%2Fdocs.gtimg.com%2Fdocs-design-resources%2Fmobile%2Fpng%402x%2Ffile_pdf_64%402x-5788417a4c.png&url=https%3A%2F%2Fdocs.qq.com%2Fpdf%2FDYk56RVZ2TXRsbEtW&scene=dce615df42e49baa738cb1170jDGp1';
+    var path = 'pages/detail/detail?qqdocurl=https%3A%2F%2Fdocs.qq.com%2Fpdf%2FDYkVZem5PTVV3S0Rt&iconurl=https%3A%2F%2Fdocs.gtimg.com%2Fdocs-design-resources%2Fmobile%2Fpng%402x%2Ffile_pdf_64%402x-5788417a4c.png&url=https%3A%2F%2Fdocs.qq.com%2Fpdf%2FDYkVZem5PTVV3S0Rt&scene=8cba18e8ab447e6e1659ad9esUyGp1';
     wx.navigateToMiniProgram({
       appId: 'wxd45c635d754dbf59',
       path: path,

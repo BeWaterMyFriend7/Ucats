@@ -96,6 +96,12 @@
   <text class="bodybold">信息错误</text>也可以联系我们。
   </view>
 
+  <view style="display:flex; justify-content:center; align-items:center;">
+  <image class='img' mode="widthFix" src='/pages/images/QR1.png' bindtap="preview" data-src="/pages/images/qr_GKMXjpg.jpg" style="width: 70%">
+ </image>
+ </view>
+ <view class="contentyd">点击并长按上面二维码图片反馈新的猫猫信息</view>
+
 </view>
 
 <!-- 毕业 -->

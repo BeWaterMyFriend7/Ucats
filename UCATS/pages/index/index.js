@@ -2,17 +2,17 @@ var app = getApp()
  Page({
 data: { 
  fostered_catlist: [
-{ name:"四福"},
-{ name:"短毛黑点"},
+{ name:"亲人小橘"},
 { name:"斜刘海"},
 { name:"齐刘海"},
 { name:"小狸"},
 { name:"格力高"},
 { name:"爆米花"},
 { name:"长毛黑点"},
+{ name:"短毛黑点"},
+{ name:"四福"},
 { name:"汤圆"},
 { name:"饭团"},
-{ name:"亲人小橘"},
 { name:"帅帅"},
 { name:"大黑"},
 ],
@@ -21,9 +21,13 @@ data: {
 { name:"白围巾"},
 { name:"不亲人小橘"},
 { name:"憨八嘎"},
+{ name:"贴地走"},
 ],
  dead_catlist: [
 ],
+imgList:[
+    "/pages/images/QR1.png"
+  ],
     screenWidth: 0,
     screenHeight: 0,
     imgwidth: 0,
@@ -140,6 +144,15 @@ data: {
         })
       }
     })
+  },
+  preview(e){
+    console.log(e.currentTarget.dataset.src)
+    let currentUrl = e.currentTarget.dataset.src
+    wx.previewImage({
+      current: currentUrl,
+      urls: this.data.imgList
+    })
   }
 
 })
+
