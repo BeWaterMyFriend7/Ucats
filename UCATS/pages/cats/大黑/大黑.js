@@ -19,8 +19,6 @@ catname:"大黑",
  content:" 亲人不可抱 可摸",},
 {category:"外貌",
  content:" 纯黑色，有点像猎犬。长毛，耷拉耳朵，尾巴扫帚状。",},
-{category:"更多",
- content:" 大黑被送到救助站，随时接受领养",},
 
 ], 
 url: app.globalData.url,
