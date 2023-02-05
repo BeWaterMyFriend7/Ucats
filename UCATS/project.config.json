@@ -48,6 +48,10 @@
     "projectname": "Ucats",
     "simulatorType": "wechat",
     "simulatorPluginLibVersion": {},
+    "editorSetting": {
+        "tabIndent": "insertSpaces",
+        "tabSize": 4
+    },
     "condition": {
         "miniprogram": {
             "list": [
@@ -59,9 +63,5 @@
                 }
             ]
         }
-    },
-    "editorSetting": {
-        "tabIndent": "insertSpaces",
-        "tabSize": 4
     }
 }

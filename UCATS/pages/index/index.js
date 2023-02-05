@@ -14,6 +14,7 @@ data: {
 { name:"汤圆"},
 { name:"饭团"},
 { name:"帅帅"},
+{ name:"猪仔"},
 { name:"大黑"},
 ],
  unknown_catlist: [
@@ -24,8 +25,9 @@ data: {
 { name:"贴地走"},
 ],
  dead_catlist: [
+{ name:"小小狸"},
 ],
-imgList:[
+    imgList:[
     "/pages/images/QR1.png"
   ],
     screenWidth: 0,
