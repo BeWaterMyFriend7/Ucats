@@ -8,6 +8,11 @@
 </view>
 <view class="contentyd">点击图片可放大</view>
 
+<view style="display:flex; justify-content:center; align-items:center;">
+<image class='img' mode="widthFix" src='/pages/images/relation1.png' bindtap="preview" data-src="/pages/images/relation1.png">
+</image>
+</view>
+<view class="contentyd">点击图片可放大</view>
 
 <view class="body">由于小程序流量限制，这里不能展示高清大图，高清大图可以通过链接查看：
  </view>

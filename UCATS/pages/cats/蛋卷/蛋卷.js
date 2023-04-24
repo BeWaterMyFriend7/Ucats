@@ -31,6 +31,9 @@ relationship:[{ rela:"菜菜"},
 nums:[
 { num: 1 },
 ],
+MovieNums:[
+{ num: 1 },
+],
 },
   //音频播放  
   audioPlay(e) {

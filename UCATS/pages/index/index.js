@@ -4,10 +4,9 @@ data: {
  fostered_catlist: [
 { name:"亲人小橘"},
 { name:"斜刘海"},
-{ name:"齐刘海"},
 { name:"小狸"},
-{ name:"格力高"},
 { name:"爆米花"},
+{ name:"汉堡"},
 { name:"长毛黑点"},
 { name:"短毛黑点"},
 { name:"四福"},
@@ -15,6 +14,7 @@ data: {
 { name:"饭团"},
 { name:"帅帅"},
 { name:"猪仔"},
+{ name:"nature"},
 { name:"大黑"},
 ],
  unknown_catlist: [
@@ -26,6 +26,7 @@ data: {
 ],
  dead_catlist: [
 { name:"小小狸"},
+{ name:"大佐"},
 ],
     imgList:[
     "/pages/images/QR1.png"

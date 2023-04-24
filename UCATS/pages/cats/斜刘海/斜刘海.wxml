@@ -65,7 +65,7 @@
 <block wx:for="{{MovieNums}}">
 
   <view style="display:flex; justify-content:center; align-items:center;">
-    <video mode="widthFix" class="cat_image" src="{{url}}{{catname}}{{item.num}}.mp4" style="width: 90%;">
+    <video mode="widthFix" class = "cat_video" src="{{url}}{{catname}}{{item.num}}.mp4" style="width: 85%;">
     </video>
   </view>
 

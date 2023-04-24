@@ -36,6 +36,8 @@ relationship:[{ rela:"脸脸"},
 ], 
 nums:[
 { num: 1 },
+{ num: 2 },
+{ num: 3 },
 ],
 },
   //音频播放  

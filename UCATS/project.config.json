@@ -37,10 +37,7 @@
         "packNpmManually": false,
         "packNpmRelationList": [],
         "minifyWXSS": true,
-        "disableUseStrict": false,
-        "minifyWXML": true,
-        "showES6CompileOption": false,
-        "useCompilerPlugins": false
+        "showES6CompileOption": false
     },
     "compileType": "miniprogram",
     "libVersion": "2.8.1",

@@ -115,9 +115,9 @@ for line in data_json:
                 if j[1] == '名字':
                     print(str(line[j[1]]))
                     continue
-                if j[0] == 23:
-                    continue
-                if str(line[j[1]]) == '' or j[1] == '是否写入图鉴':
+                # if j[0] == 23:
+                #     continue
+                if str(line[j[1]]) == '' or j[1] == '是否写入图鉴' or j[1] == '是否加音频' or j[1] == '是否加视频':
                     continue
                 # print(j[1] + " " + str(line[j[1]]))
                 f.write(

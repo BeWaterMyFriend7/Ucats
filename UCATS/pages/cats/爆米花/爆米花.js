@@ -22,7 +22,7 @@ catname:"爆米花",
 {category:"外貌",
  content:" 长毛橘，白围脖，白手套，尾巴长毛巨好看",},
 {category:"关系",
- content:" 脸谱、一点白、汉堡的兄弟",},
+ content:" 脸谱、一点白、汉堡的兄弟，除去爆米花，剩下他们三个有点难分，可以看看猫猫关系图谱",},
 
 ], 
 url: app.globalData.url,

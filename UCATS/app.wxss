@@ -149,6 +149,10 @@
   height:auto;
 }
 
+.cat_video {
+  border-radius: 10rpx;
+}
+
 .cat-card {
   font-size: 45rpx;
   color:black; 
