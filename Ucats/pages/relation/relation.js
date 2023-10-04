@@ -197,6 +197,17 @@ function initChart(canvas, width, height, dpr) {
           distance: 1,
           formatter: '{b}'
         },
+        edgeLabel: {
+          normal: {
+              show: true,
+              position:'middle',
+              distance: -1,
+              textStyle:{fontSize:5},
+              formatter: function(x) {
+                  return x.data.relation;
+              }
+          }
+        },
         lineStyle: {
           color: 'source',
           width: 2,
