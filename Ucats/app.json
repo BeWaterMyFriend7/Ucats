@@ -1,0 +1,94 @@
+{
+  "pages": [ 
+    "pages/index/index",
+    "pages/cats/脸脸/脸脸",
+    "pages/cats/大橘/大橘",
+    "pages/cats/大三花/大三花",
+    "pages/cats/丑丑/丑丑",
+    "pages/cats/小三花/小三花",
+    "pages/cats/亲人小橘/亲人小橘",
+    "pages/cats/白围巾/白围巾",
+    "pages/cats/刘海妈/刘海妈",
+    "pages/cats/斜刘海/斜刘海",
+    "pages/cats/齐刘海/齐刘海",
+    "pages/cats/不亲人小橘/不亲人小橘",
+    "pages/cats/小狸/小狸",
+    "pages/cats/菜菜/菜菜",
+    "pages/cats/格力高/格力高",
+    "pages/cats/憨八嘎/憨八嘎",
+    "pages/cats/蛋卷/蛋卷",
+    "pages/cats/脸谱/脸谱",
+    "pages/cats/一点白/一点白",
+    "pages/cats/爆米花/爆米花",
+    "pages/cats/汉堡/汉堡",
+    "pages/cats/贴地走/贴地走",
+    "pages/cats/仙女/仙女",
+    "pages/cats/朵朵/朵朵",
+    "pages/cats/长毛黑点/长毛黑点",
+    "pages/cats/短毛黑点/短毛黑点",
+    "pages/cats/demo/demo",
+    "pages/cats/四福/四福",
+    "pages/cats/汤圆/汤圆",
+    "pages/cats/饭团/饭团",
+    "pages/cats/帅帅/帅帅",
+    "pages/cats/小黑/小黑",
+    "pages/cats/小小狸/小小狸",
+    "pages/cats/猪仔/猪仔",
+    "pages/cats/大佐/大佐",
+    "pages/cats/大佑/大佑",
+    "pages/cats/刀哥/刀哥",
+    "pages/cats/nature/nature",
+    "pages/cats/呆呆/呆呆",
+    "pages/cats/白三花/白三花",
+    "pages/cats/狸三花/狸三花",
+    "pages/cats/小小三花/小小三花",
+    "pages/cats/丸子头/丸子头",
+    "pages/cats/三撮毛/三撮毛",
+    "pages/cats/七七/七七",
+    "pages/cats/闹闹/闹闹",
+    "pages/cats/兜兜/兜兜",
+    "pages/cats/虎子/虎子",
+    "pages/cats/怕人橘/怕人橘",
+    "pages/cats/狸局/狸局",
+    "pages/cats/三文鱼/三文鱼",
+    "pages/cats/大黑/大黑",
+    
+    "pages/about/about",
+    "pages/logs/logs",
+    "pages/relation/relation",
+    "pages/science/science",
+    "pages/index/玳瑁及三花/玳瑁及三花",
+    "pages/index/橘猫及橘白/橘猫及橘白",
+    "pages/index/纯色/纯色",
+    "pages/index/奶牛/奶牛",
+    "pages/index/狸花/狸花",
+    "pages/index/所有/所有"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Ucats",
+    "navigationBarTextStyle": "black",
+    "enablePullDownRefresh": true
+  },
+  "sitemapLocation": "sitemap.json",
+  "tabBar": {
+    "selectedColor":"#94070a",
+    "color": "#888888",
+    "list": [
+      {
+        "text": "查猫",
+        "pagePath": "pages/index/index"
+      },
+      {
+        "text": "猫猫关系",
+        "pagePath": "pages/relation/relation"
+      },
+      {
+        "text": "关于",
+        "pagePath": "pages/about/about"
+      }
+    ]
+  }
+
+}
