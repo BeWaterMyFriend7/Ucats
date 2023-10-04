@@ -1,26 +1,24 @@
 var app = getApp()
  Page({ 
  data: {
-catname:"长毛黑点",
+catname:"女明星",
  catitems:[ 
 {category:"毛色",
- content:" 长毛奶牛",},
+ content:" 白色",},
 {category:"出没地点",
- content:" 东区",},
+ content:" 西区",},
 {category:"性别",
  content:" 未知",},
 {category:"状况",
- content:" 送养",},
+ content:" 失踪",},
 {category:"绝育情况",
- content:" 已绝育",},
+ content:" 未知/可能不适宜绝育",},
 {category:"疫苗",
  content:" 未打疫苗",},
 {category:"性格",
- content:" 亲人可抱",},
-{category:"送养时间",
- content:" 2022年11月01号",},
+ content:" 未知 数据缺失",},
 {category:"外貌",
- content:" 长毛奶牛，白围脖、白手套、白口罩，鼻子左侧标志性一个黑点 ·",},
+ content:" 女明星不是异瞳",},
 
 ], 
 url: app.globalData.url,

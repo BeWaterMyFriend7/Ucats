@@ -3,8 +3,6 @@ var app = getApp()
  data: {
 catname:"仙女",
  catitems:[ 
-{category:"昵称",
- content:" 女明星",},
 {category:"毛色",
  content:" 白色",},
 {category:"出没地点",

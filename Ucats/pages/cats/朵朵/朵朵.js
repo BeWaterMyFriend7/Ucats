@@ -30,8 +30,6 @@ relationship:[{ rela:"脸谱"},
 ], 
 nums:[
 { num: 1 },
-{ num: 2 },
-{ num: 3 },
 ],
 MovieNums:[
 { num: 1 },

@@ -1,4 +1,9 @@
 <!--index.wxml-->
+<view class="body">点击对应结点和线可以看到有关内容的详细信息，关系图可以拖放，不可缩放
+</view>
+<text>\n\n</text>
 <view class="container">
   <ec-canvas type="2d" id="mychart-dom-pie" canvas-id="mychart-pie" ec="{{ ec }}"></ec-canvas>
 </view>
+
+  

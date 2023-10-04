@@ -4,7 +4,7 @@ var app = getApp()
 catname:"虎子",
  catitems:[ 
 {category:"毛色",
- content:" 全橘",},
+ content:" 橘白",},
 {category:"出没地点",
  content:" 西区",},
 {category:"性别",

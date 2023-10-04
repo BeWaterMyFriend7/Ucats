@@ -4,7 +4,7 @@
 
 
 
-<img src="README/image-20230105213515381.png" alt="image-20230105213515381" style="zoom:67%;" />
+<img src="D:\BeWater\AppData\Roaming\Typora\typora-user-images\image-20231004230900527.png" alt="image-20231004230900527" style="zoom:33%;" />
 
 <img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" />
 
@@ -15,6 +15,16 @@
 使用说明见 https://gitee.com/circlelq/yan-yuan-mao-su-cha-shou-ce/wikis/Home
 
 小程序视频教程： https://www.bilibili.com/video/BV16b4y1S7PN
+
+
+
+## TODO 
+
+- 文件优化
+  - 代码文件尽量不出现中文
+  - 部分模版数据、python文件 和小程序文件分开
+  - 开发版本和上传版本分开
+- 自动化绘制关系图 [需要进一步考虑]
 
 
 

@@ -20,7 +20,7 @@ catname:"饭团",
 {category:"性格",
  content:" 亲人可抱",},
 {category:"送养时间",
- content:" 2022年11月1号",},
+ content:" 2022年11月01号",},
 {category:"外貌",
  content:" 全身基本白色，头部有标志性的一撮黑",},
 

@@ -6,21 +6,21 @@ var rooturl = "https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/Ucats_pic/";
 
 var nodes_ll = [
   {name : '脸脸', x : 0, y : 0,value: '已领养', symbol : "image://" + rooturl + "脸脸.png"},
-  {name : '大橘', x : 100, y : 0, symbol : "image://" + rooturl + "大橘.png"},
-  {name : '小狸', x : 200, y : 100, symbol : "image://" + rooturl + "小狸.png"},
+  {name : '大橘', x : 0, y : -150, symbol : "image://" + rooturl + "大橘.png"},
+  {name : '小狸', x : 100, y : 100, symbol : "image://" + rooturl + "小狸.png"},
   {name : '大三花', x : -100, y : 100, symbol : "image://" + rooturl + "大三花.png"},
   {name : '丑丑', x : -150, y : 0, symbol : "image://" + rooturl + "丑丑.png"},
-    {name : '白围巾', x : -200, y : 100, symbol : "image://" + rooturl + "白围巾.png"},
-    {name : '亲人小橘', x : -250, y : 0, symbol : "image://" + rooturl + "亲人小橘.png"},
-    {name : '小三花', x : -200, y : -100, symbol : "image://" + rooturl + "小三花.png"},
-  {name : '刘海妈', x : 250, y : 0, symbol : "image://" + rooturl + "刘海妈.png"},
-    {name : '不亲人小橘', x : 300, y : 100, symbol : "image://" + rooturl + "不亲人小橘.png"},
+    {name : '白围巾', x : -200, y : 150, symbol : "image://" + rooturl + "白围巾.png"},
+    {name : '亲人小橘', x : -300, y : 0, symbol : "image://" + rooturl + "亲人小橘.png"},
+    {name : '小三花', x : -200, y : -150, symbol : "image://" + rooturl + "小三花.png"},
+  {name : '刘海妈', x : 150, y : 0, symbol : "image://" + rooturl + "刘海妈.png"},
+    {name : '不亲人小橘', x : 300, y : 150, symbol : "image://" + rooturl + "不亲人小橘.png"},
     {name : '斜刘海', x : 350, y : 0, value:'已领养',symbol : "image://" + rooturl + "斜刘海.png"},
-    {name : '齐刘海', x : 300, y : -100, symbol : "image://" + rooturl + "齐刘海.png"},
+    {name : '齐刘海', x : 300, y : -150, symbol : "image://" + rooturl + "齐刘海.png"},
 
   {name : '蛋卷', x : 200, y : -100, symbol : "image://" + rooturl + "蛋卷.png"},
-    {name : '丸子头', x :100 , y : 200, symbol : "image://" + rooturl + "丸子头.png"},
-    {name : '三撮毛', x :200 , y : 200, symbol : "image://" + rooturl + "三撮毛.png"},
+    {name : '丸子头', x :100 , y : 250, symbol : "image://" + rooturl + "丸子头.png"},
+    {name : '三撮毛', x :200 , y : 250, symbol : "image://" + rooturl + "三撮毛.png"},
 
   {name : '格力高', x :300 , y : -300, symbol : "image://" + rooturl + "格力高.png"},
   {name : '憨八嘎', x :200 , y : -300, symbol : "image://" + rooturl + "憨八嘎.png"},
@@ -28,7 +28,7 @@ var nodes_ll = [
 ];
 
 var links_ll = [
-  {source: '脸脸', target:'大橘' , lineStyle: {color:(255,255,255)},relation: "情侣"},
+  {source: '脸脸', target:'大橘' ,relation: "情侣"},
   {source: '脸脸', target:'小狸' , relation: "母子"},
   {source: '脸脸', target:'大三花' , relation: "母子"},
   {source: '脸脸', target:'丑丑' , relation: "母子"},
@@ -62,13 +62,13 @@ var links_ll = [
 ];
 
 var nodes_dq = [
-  {name : '帅帅', x : -400, y : 200, symbol : "image://" + rooturl + "帅帅.png"},
-  {name : '小小狸', x : -400, y : 100, symbol : "image://" + rooturl + "小小狸.png"},
-  {name : 'nature', x : -400, y : 0, symbol : "image://" + rooturl + "nature.png"},
-  {name : '汤圆', x : -400, y : -100, symbol : "image://" + rooturl + "汤圆.png"},
-  {name : '饭团', x : -400, y : -200, symbol : "image://" + rooturl + "饭团.png"},
-  {name : '短毛黑点', x : -400, y : -300, symbol : "image://" + rooturl + "短毛黑点.png"},
-  {name : '长毛黑点', x : -400, y : -400, symbol : "image://" + rooturl + "长毛黑点.png"},
+  {name : '帅帅', x : -400, y : 350, value:'已领养', symbol : "image://" + rooturl + "帅帅.png"},
+  {name : '小小狸', x : -400, y : 200, symbol : "image://" + rooturl + "小小狸.png"},
+  {name : 'nature', x : -400, y : 50,value:'已领养', symbol : "image://" + rooturl + "nature.png"},
+  {name : '汤圆', x : -400, y : -100,value:'已领养', symbol : "image://" + rooturl + "汤圆.png"},
+  {name : '饭团', x : -400, y : -250,value:'已领养', symbol : "image://" + rooturl + "饭团.png"},
+  {name : '短毛黑点', x : -400, y : -400, value:'已领养',symbol : "image://" + rooturl + "短毛黑点.png"},
+  {name : '长毛黑点', x : -400, y : -550, value:'已领养',symbol : "image://" + rooturl + "长毛黑点.png"},
 ];
 
 var links_dq = [
@@ -76,23 +76,24 @@ var links_dq = [
 ];
 
 var nodes_ydb = [
-  {name : '一点白', x : -100, y : 500, symbol : "image://" + rooturl + "一点白.png"},
-  {name : '汉堡', x : 0, y : 500, value: "已领养", symbol : "image://" + rooturl + "汉堡.png"},
-  {name : '爆米花', x : -100, y : 400, value: "已领养", symbol : "image://" + rooturl + "爆米花.png"},
-  {name : '脸谱', x : 0, y : 400, value: "已领养", symbol : "image://" + rooturl + "脸谱.png"},
+  {name : '一点白', x : -100, y : 700, symbol : "image://" + rooturl + "一点白.png"},
+  {name : '汉堡', x : 0, y : 700, value: "已领养", symbol : "image://" + rooturl + "汉堡.png"},
+  {name : '爆米花', x : -100, y : 550, value: "已领养", symbol : "image://" + rooturl + "爆米花.png"},
+  {name : '脸谱', x : 0, y : 550, value: "已领养", symbol : "image://" + rooturl + "脸谱.png"},
 
-  {name : '呆呆', x : 100, y : 500, symbol : "image://" + rooturl + "呆呆.png"},
-  {name : '朵朵', x : -200, y : 500, symbol : "image://" + rooturl + "朵朵.png"},
-  {name : '仙女', x : -300, y : 500, symbol : "image://" + rooturl + "仙女.png"},
-  {name : '大佐', x : 200, y : 500, symbol : "image://" + rooturl + "大佐.png"},
+  {name : '呆呆', x : 100, y : 700, symbol : "image://" + rooturl + "呆呆.png"},
+  {name : '朵朵', x : -200, y : 700, symbol : "image://" + rooturl + "朵朵.png"},
+  {name : '仙女', x : -300, y : 700, symbol : "image://" + rooturl + "仙女.png"},
+  {name : '女明星', x : -400, y : 700, symbol : "image://" + rooturl + "女明星.png"},
+  {name : '大佐', x : 200, y : 700, symbol : "image://" + rooturl + "大佐.png"},
 
-  {name : '小黑', x : -300, y : 300, symbol : "image://" + rooturl + "小黑.png"},
-  {name : 'demo', x : -200, y : 300, symbol : "image://" + rooturl + "demo.png"},
-  {name : '猪仔', x : -100, y : 300, symbol : "image://" + rooturl + "猪仔.png"},
-  {name : '贴地走', x : 0, y : 300, symbol : "image://" + rooturl + "贴地走.png"},
-  {name : '大佑', x : 100, y : 300, symbol : "image://" + rooturl + "大佑.png"},
-  {name : '刀哥', x : 200, y : 300, symbol : "image://" + rooturl + "刀哥.png"},
-  {name : '四福', x : 300, y : 300, symbol : "image://" + rooturl + "四福.png"},
+  {name : '小黑', x : -300, y : 400, symbol : "image://" + rooturl + "小黑.png"},
+  {name : 'demo', x : -200, y : 400, value:'已领养',symbol : "image://" + rooturl + "demo.png"},
+  {name : '猪仔', x : -100, y : 400, value:'已领养',symbol : "image://" + rooturl + "猪仔.png"},
+  {name : '贴地走', x : 0, y : 400, symbol : "image://" + rooturl + "贴地走.png"},
+  {name : '大佑', x : 100, y : 400, symbol : "image://" + rooturl + "大佑.png"},
+  {name : '刀哥', x : 200, y : 400, symbol : "image://" + rooturl + "刀哥.png"},
+  {name : '四福', x : 300, y : 400, value:'已领养',symbol : "image://" + rooturl + "四福.png"},
 ];
 
 var links_ydb = [
@@ -115,17 +116,17 @@ var links_ydb = [
 ];
 
 var nodes_xsh = [
-  {name: '白三花',  x: -100,  y: -300,  symbol:"image://" + rooturl +"白三花.png"},
-  {name: '狸三花',  x: -200, y: -200,   symbol:"image://" + rooturl +"狸三花.png"},
-  {name: '小小三花',  x: -200, y: -300,   symbol:"image://" + rooturl +"小小三花.png"},
-  {name : '七七', x : -100, y : -200, symbol : "image://" + rooturl + "七七.png"},
+  {name: '白三花',  x: -50,  y: -300,  symbol:"image://" + rooturl +"白三花.png"},
+  {name: '狸三花',  x: -250, y: -400,   symbol:"image://" + rooturl +"狸三花.png"},
+  {name: '小小三花',  x: -200, y: -300, value:'已领养',  symbol:"image://" + rooturl +"小小三花.png"},
+  {name : '七七', x : -100, y : -400, value:'已领养',symbol : "image://" + rooturl + "七七.png"},
 
-  {name : '闹闹', x : -300, y : -400, symbol : "image://" + rooturl + "闹闹.png"},
-  {name : '兜兜', x : -200, y : -400, symbol : "image://" + rooturl + "兜兜.png"},
-  {name : '怕人橘', x : -100, y : -400, symbol : "image://" + rooturl + "怕人橘.png"},
-  {name : '三文鱼', x : 0, y : -400, symbol : "image://" + rooturl + "三文鱼.png"},
-  {name : '狸局', x : 100, y : -400, symbol : "image://" + rooturl + "狸局.png"},
-  {name : '虎子', x : 200, y : -400, symbol : "image://" + rooturl + "虎子.png"},
+  {name : '闹闹', x : -300, y : -550,value:'已领养', symbol : "image://" + rooturl + "闹闹.png"},
+  {name : '兜兜', x : -200, y : -550,value:'已领养', symbol : "image://" + rooturl + "兜兜.png"},
+  {name : '怕人橘', x : -100, y : -550, symbol : "image://" + rooturl + "怕人橘.png"},
+  {name : '三文鱼', x : 0, y : -550, symbol : "image://" + rooturl + "三文鱼.png"},
+  {name : '狸局', x : 100, y : -550, symbol : "image://" + rooturl + "狸局.png"},
+  {name : '虎子', x : 200, y : -550,value:'已领养', symbol : "image://" + rooturl + "虎子.png"},
 ];
 
 var links_xsh = [
@@ -152,20 +153,6 @@ var links =[
   ...links_ydb
 ];
 
-  var categories = [
-    {
-      name : "三花和玳瑁"
-    },{
-      name: "橘猫和橘白"
-    },{
-      name: "纯色"
-    },{
-      name: "奶牛"
-    },{
-      name: "狸花"
-    }
-  ];
-
 function initChart(canvas, width, height, dpr) {
   const chart = echarts.init(canvas, null, {
     width: width,
@@ -182,7 +169,7 @@ function initChart(canvas, width, height, dpr) {
       trigger: 'item',
       formatter:function(params){
         if(params.data.relation){
-            return params.data.source + '--' + params.data.relation + '--'+ params.data.target;
+            return params.data.source + '--' + params.data.relation + '-->'+ params.data.target;
         }
         else if(params.value){
           return params.name + "  " + params.value;
@@ -203,16 +190,17 @@ function initChart(canvas, width, height, dpr) {
         
         data: nodes,
         links: links,
-        categories: categories,
 
         label: {
-          position: 'right',
+          position: 'bottom',
+          show: true,
+          distance: 1,
           formatter: '{b}'
         },
         lineStyle: {
           color: 'source',
           width: 2,
-          curveness: 0.5
+          curveness: 0.3
         },
         emphasis: {
           focus: 'adjacency',

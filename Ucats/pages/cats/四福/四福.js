@@ -20,7 +20,7 @@ catname:"四福",
 {category:"性格",
  content:" 亲人可抱",},
 {category:"送养时间",
- content:" 2022年6月1号",},
+ content:" 2022年6月01号",},
 {category:"外貌",
  content:" 简州狸花，眼部到脚部都是白色，花臂",},
 

@@ -59,7 +59,7 @@ labels = [
     [10, '绝育情况', lambda x:'已绝育' if x ==
      1 else '未绝育' if x == 0 else '未知/可能不适宜绝育'],
     [11, '绝育时间', lambda x:str(x)],
-    [12, '出生时间', lambda x:x],
+    [12, '出生时间', lambda x:str(x)],
     [13, '疫苗', lambda x: '已打疫苗' if x == 1 else '未打疫苗'],
     [15, '性格', lambda x: '亲人可抱' if x == 6 else '亲人不可抱 可摸' if x == 5 else '薛定谔亲人' if x == 4 else '吃东西时可以一直摸' if x ==
         3 else '吃东西时可以摸一下' if x == 2 else '怕人 安全距离 1m 以内' if x == 1 else '怕人 安全距离 1m 以外' if x == 0 else '未知 数据缺失'],

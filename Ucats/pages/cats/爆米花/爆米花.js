@@ -32,6 +32,7 @@ relationship:[{ rela:"脸谱"},
 ], 
 nums:[
 { num: 1 },
+{ num: 2 },
 ],
 },
   //音频播放  

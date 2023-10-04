@@ -2,6 +2,7 @@ var app = getApp()
  Page({
 data: { 
  fostered_catlist: [
+{ name:"脸脸"},
 { name:"亲人小橘"},
 { name:"斜刘海"},
 { name:"小狸"},
@@ -20,6 +21,8 @@ data: {
 { name:"nature"},
 { name:"小小三花"},
 { name:"七七"},
+{ name:"闹闹"},
+{ name:"兜兜"},
 { name:"虎子"},
 { name:"大黑"},
 ],
@@ -35,8 +38,11 @@ data: {
 { name:"一点白"},
 { name:"贴地走"},
 { name:"仙女"},
+{ name:"女明星"},
 { name:"朵朵"},
 { name:"小黑"},
+{ name:"大佑"},
+{ name:"刀哥"},
 { name:"呆呆"},
 ],
  dead_catlist: [

@@ -20,7 +20,7 @@ catname:"汤圆",
 {category:"性格",
  content:" 亲人可抱",},
 {category:"送养时间",
- content:" 2022年11月1号",},
+ content:" 2022年11月01号",},
 {category:"外貌",
  content:" 耳朵两侧各有一块黑点，背部两块黑块，尾巴黑色 远看像一个露馅的黑芝麻汤圆",},
 
