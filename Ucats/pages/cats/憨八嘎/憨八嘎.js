@@ -29,6 +29,11 @@ relationship:[{ rela:"菜菜"},
 { rela:"蛋卷"},
 ], 
 nums:[
+{ num: 1 },
+{ num: 2 },
+],
+MovieNums:[
+{ num: 1 },
 ],
 },
   //音频播放  

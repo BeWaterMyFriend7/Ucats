@@ -1,8 +1,9 @@
 import * as echarts from '../../ec-canvas/echarts';
+// import * from '../images/relation';
 
 const app = getApp();
 
-var rooturl = "https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/Ucats_pic/";
+var rooturl = "https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/Ucats_pic/relation/";
 
 var nodes_ll = [
   {name : '脸脸', x : 0, y : 0,value: '已领养', symbol : "image://" + rooturl + "脸脸.png"},
@@ -118,7 +119,7 @@ var links_ydb = [
 var nodes_xsh = [
   {name: '白三花',  x: -50,  y: -300,  symbol:"image://" + rooturl +"白三花.png"},
   {name: '狸三花',  x: -250, y: -400,   symbol:"image://" + rooturl +"狸三花.png"},
-  {name: '小小三花',  x: -200, y: -300, value:'已领养',  symbol:"image://" + rooturl +"小小三花.png"},
+  {name: '大眼',  x: -200, y: -300, value:'已领养',  symbol:"image://" + rooturl +"大眼.png"},
   {name : '七七', x : -100, y : -400, value:'已领养',symbol : "image://" + rooturl + "七七.png"},
 
   {name : '闹闹', x : -300, y : -550,value:'已领养', symbol : "image://" + rooturl + "闹闹.png"},
@@ -134,9 +135,9 @@ var links_xsh = [
   {source: '白三花', target:'七七' , relation: "同一窝的兄弟姐妹"},
   {source: '狸三花', target:'七七' , relation: "同一窝的兄弟姐妹"},
 
-  {source: '小小三花', target:'七七' , relation: "关系很好"},
-  {source: '小小三花', target:'狸三花' , relation: "关系很好"},
-  {source: '小小三花', target:'白三花' , relation: "关系很好"},
+  {source: '大眼', target:'七七' , relation: "关系很好"},
+  {source: '大眼', target:'狸三花' , relation: "关系很好"},
+  {source: '大眼', target:'白三花' , relation: "关系很好"},
 ];
 
 var nodes = [
@@ -185,7 +186,7 @@ function initChart(canvas, width, height, dpr) {
       {
         type: 'graph',
         layout: 'none',
-        symbolSize: 30,
+        symbolSize: [25,25],
         roam: true,
         
         data: nodes,
