@@ -9,7 +9,7 @@ const mpServerless = new MPServerless({
 }, {
   appId: 'wxf6b3f064105b1e8b', // 小程序应用标识
   spaceId: 'mp-3a965197-01b8-4b19-91f6-1547e89e0a71', // 服务空间标识
-  clientSecret: 'RZ82DEKoNQX+XMFrlnzbHw==', // 服务空间 secret key
+  clientSecret: 'secret_key_of_alicloud_serverless', // 服务空间 secret key
   endpoint: 'https://api.next.bspapp.com', // 服务空间地址，从小程序 serverless 控制台处获得
 });
 
