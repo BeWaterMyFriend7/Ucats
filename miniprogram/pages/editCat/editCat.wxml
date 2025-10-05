@@ -9,6 +9,19 @@
   </view>
 </view>
 
+<!-- 头像上传区域 -->
+<view class="head1">
+  <text user-select="true">头像</text>
+</view>
+<view class="image-upload-container">
+  <view class="avatar-preview" bindtap="chooseAvatar">
+    <image wx:if="{{avatarUrl || cat.avatarUrl}}" class="avatar-image" src="{{avatarUrl || cat.avatarUrl}}" mode="aspectFill"></image>
+    <view wx:else class="avatar-placeholder">
+      <text>点击上传头像</text>
+    </view>
+  </view>
+</view>
+
 <view class="head1">
   <text user-select="true">昵称</text>
 </view>
@@ -53,32 +66,99 @@
   </view>
 </picker>
 
+<!-- 图片上传区域 -->
 <view class="head1">
-  <text user-select="true">下方加图片数</text>
+  <text user-select="true">图片</text>
 </view>
-<picker mode="selector" data-key='addPhotoNumber' bindchange="bindPickerChange" range="{{pickers.addPhotoNumber}}" value='{{picker_selected.addPhotoNumber}}'>
-  <view class="edit-input">
-    {{cat.addPhotoNumber}}
+<view class="image-upload-section">
+  <!-- 现有图片 -->
+  <view wx:if="{{cat.imageUrls}}" class="image-grid">
+    <view wx:for="{{cat.imageUrls}}" wx:key="index" class="image-item">
+      <image class="uploaded-image" src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.url}}"></image>
+      <view class="image-actions">
+        <view class="set-cover-btn" bindtap="setCoverImage" data-index="{{index}}">
+          <text wx:if="{{item.isCover}}">首图</text>
+          <text wx:else>设为首图</text>
+        </view>
+        <view class="remove-image-btn" bindtap="removeExistingImage" data-index="{{index}}">删除</view>
+      </view>
+    </view>
   </view>
-</picker>
+  
+  <!-- 新增图片 -->
+  <view class="image-grid">
+    <view wx:for="{{newImageList}}" wx:key="index" class="image-item">
+      <image class="uploaded-image" src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.url}}"></image>
+      <view class="image-actions">
+        <view class="set-cover-btn" bindtap="setNewCoverImage" data-index="{{index}}">
+          <text wx:if="{{item.isCover}}">首图</text>
+          <text wx:else>设为首图</text>
+        </view>
+        <view class="remove-image-btn" bindtap="removeNewImage" data-index="{{index}}">删除</view>
+      </view>
+    </view>
+    <view wx:if="{{(cat.imageUrls && cat.imageUrls.length + newImageList.length < 5) || (!cat.imageUrls && newImageList.length < 5)}}" class="upload-button" bindtap="chooseImage">
+      <text>+</text>
+    </view>
+  </view>
+  <view class="upload-hint">最多可上传5张图片，首图将作为猫咪的主要展示图片</view>
+</view>
 
+<!-- 视频上传区域 -->
 <view class="head1">
-  <text user-select="true">加音频数</text>
+  <text user-select="true">视频</text>
 </view>
-<picker mode="selector" data-key='audioNumber' bindchange="bindPickerChange" range="{{pickers.audioNumber}}" value='{{picker_selected.audioNumber}}'>
-  <view class="edit-input">
-    {{cat.audioNumber}}
+<view class="video-upload-section">
+  <!-- 现有视频 -->
+  <view wx:if="{{cat.videoUrls}}" class="video-grid">
+    <view wx:for="{{cat.videoUrls}}" wx:key="index" class="video-item">
+      <video class="uploaded-video" src="{{item}}" controls></video>
+      <view class="remove-video-btn" bindtap="removeExistingVideo" data-index="{{index}}">删除</view>
+    </view>
   </view>
-</picker>
+  
+  <!-- 新增视频 -->
+  <view class="video-grid">
+    <view wx:for="{{newVideoList}}" wx:key="index" class="video-item">
+      <video class="uploaded-video" src="{{item.url}}" controls></video>
+      <view class="remove-video-btn" bindtap="removeNewVideo" data-index="{{index}}">删除</view>
+    </view>
+    <view wx:if="{{(cat.videoUrls && cat.videoUrls.length + newVideoList.length < 2) || (!cat.videoUrls && newVideoList.length < 2)}}" class="upload-button" bindtap="chooseVideo">
+      <text>+</text>
+    </view>
+  </view>
+  <view class="upload-hint">最多可上传2个视频</view>
+</view>
 
+<!-- 音频上传区域 -->
 <view class="head1">
-  <text user-select="true">下方加视频数</text>
+  <text user-select="true">音频</text>
 </view>
-<picker mode="selector" data-key='movieNums' bindchange="bindPickerChange" range="{{pickers.movieNums}}" value='{{picker_selected.movieNums}}'>
-  <view class="edit-input">
-    {{cat.movieNums}}
+<view class="audio-upload-section">
+  <!-- 现有音频 -->
+  <view wx:if="{{cat.audioUrls}}" class="audio-list">
+    <view wx:for="{{cat.audioUrls}}" wx:key="index" class="audio-item">
+      <view class="audio-info">
+        <text>音频{{index + 1}}</text>
+      </view>
+      <view class="remove-audio-btn" bindtap="removeExistingAudio" data-index="{{index}}">删除</view>
+    </view>
   </view>
-</picker>
+  
+  <!-- 新增音频 -->
+  <view class="audio-list">
+    <view wx:for="{{newAudioList}}" wx:key="index" class="audio-item">
+      <view class="audio-info">
+        <text>新音频{{index + 1}}</text>
+      </view>
+      <view class="remove-audio-btn" bindtap="removeNewAudio" data-index="{{index}}">删除</view>
+    </view>
+    <view wx:if="{{(cat.audioUrls && cat.audioUrls.length + newAudioList.length < 3) || (!cat.audioUrls && newAudioList.length < 3)}}" class="upload-button" bindtap="chooseAudio">
+      <text>+</text>
+    </view>
+  </view>
+  <view class="upload-hint">最多可上传3个音频文件</view>
+</view>
 
 <view class="head1">
   <text user-select="true">状况</text>
@@ -207,3 +287,7 @@
 <button type="warn" bindtap='delete' style="margin: 0 auto; width: 60%;">删除</button>
 
 <text> \n </text>
+
+<!-- 隐藏的画布用于图片处理 -->
+<canvas class="hidden-canvas" canvas-id="compressCanvas" style="width: 0; height: 0;"></canvas>
+<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="width: 0; height: 0;"></canvas>

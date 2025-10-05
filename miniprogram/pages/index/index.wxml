@@ -103,6 +103,21 @@
  </view>
  <view class="contentyd">点击并长按上面二维码图片反馈新的猫猫信息</view>
 
+  <!-- 管理员操作按钮 -->
+  <view wx:if="{{isAdministrator && currentMode === MODES.ADMIN}}" class="admin-buttons">
+    <button class="admin-btn add-cat-btn" bindtap="addCat">
+      <!-- <image class="btn-icon" src="/pages/images/add.png"></image> -->
+      添加猫咪
+    </button>
+  </view>
+
+  <!-- 管理员模式切换按钮 -->
+  <view wx:if="{{isAdministrator}}" class="mode-toggle-container">
+    <text class="mode-toggle-btn" bindtap="toggleAdminMode">
+      {{currentMode === MODES.ADMIN ? '退出管理员模式' : '进入管理员模式'}}
+    </text>
+  </view>
+
 </view>
 
 <!-- 毕业 -->
@@ -110,36 +125,54 @@
 <text> \n </text>
 
 <view hidden="{{currentTab!==1}}">
-  <navigator block wx:for="{{fostered_cat}}" wx:key="_id" url="/pages/catDetail/catDetail?_id={{item._id}}">
-    <view bindlongpress='editCat' data-_id="{{item._id}}" class="catitem">
-      <image lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
-      <view class="cat-name">{{item.name}}</view>
-    </view>
+  <view wx:for="{{fostered_cat}}" wx:key="_id">
+    <!-- 普通模式下只显示猫咪信息 -->
+    <navigator block url="/pages/catDetail/catDetail?_id={{item._id}}">
+      <view class="catitem">
+        <!-- 使用数据库中存储的头像URL -->
+        <image wx:if="{{item.avatarUrl}}" lazy-load='true' class='avator' src="{{item.avatarUrl}}" mode='aspectFill'></image>
+        <!-- 如果没有头像URL，则使用默认方式 -->
+        <image wx:else lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
+        <view class="cat-name">{{item.name}}</view>
+      </view>
+    </navigator>
     <view class="divLine"></view>
-  </navigator>
+  </view>
 </view>
 
 
 <!-- 休学 -->
 
 <view hidden="{{currentTab!==2}}">
-  <navigator block wx:for="{{unknown_cat}}" wx:key="_id" url="/pages/catDetail/catDetail?_id={{item._id}}">
-    <view bindlongpress='editCat' data-_id="{{item._id}}" class="catitem">
-      <image lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
-      <view class="cat-name">{{item.name}}</view>
-    </view>
+  <view wx:for="{{unknown_cat}}" wx:key="_id">
+    <!-- 普通模式下只显示猫咪信息 -->
+    <navigator block url="/pages/catDetail/catDetail?_id={{item._id}}">
+      <view class="catitem">
+        <!-- 使用数据库中存储的头像URL -->
+        <image wx:if="{{item.avatarUrl}}" lazy-load='true' class='avator' src="{{item.avatarUrl}}" mode='aspectFill'></image>
+        <!-- 如果没有头像URL，则使用默认方式 -->
+        <image wx:else lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
+        <view class="cat-name">{{item.name}}</view>
+      </view>
+    </navigator>
     <view class="divLine"></view>
-  </navigator>
+  </view>
 </view>
 
 <!-- 喵星 -->
 
 <view hidden="{{currentTab!==3}}">
-  <navigator block wx:for="{{dead_cat}}" wx:key="_id" url="/pages/catDetail/catDetail?_id={{item._id}}">
-    <view bindlongpress='editCat' data-_id="{{item._id}}" class="catitem">
-      <image lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
-      <view class="cat-name">{{item.name}}</view>
-    </view>
+  <view wx:for="{{dead_cat}}" wx:key="_id">
+    <!-- 普通模式下只显示猫咪信息 -->
+    <navigator block url="/pages/catDetail/catDetail?_id={{item._id}}">
+      <view class="catitem">
+        <!-- 使用数据库中存储的头像URL -->
+        <image wx:if="{{item.avatarUrl}}" lazy-load='true' class='avator' src="{{item.avatarUrl}}" mode='aspectFill'></image>
+        <!-- 如果没有头像URL，则使用默认方式 -->
+        <image wx:else lazy-load='true' class='avator' src="{{url}}{{item.name}}.png" mode='aspectFill'></image>
+        <view class="cat-name">{{item.name}}</view>
+      </view>
+    </navigator>
     <view class="divLine"></view>
-  </navigator>
+  </view>
 </view>

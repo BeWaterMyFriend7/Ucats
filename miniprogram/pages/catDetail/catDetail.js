@@ -8,49 +8,43 @@ Page({
     relatedCatsId: [],
     photoArray: [],
     audioArr: [],
-    movieArray: []
+    movieArray: [],
+    // 添加管理员模式相关数据
+    isAdministrator: app.globalData.isAdministrator,
+    currentMode: app.globalData.currentMode,
+    MODES: app.globalData.MODES
   },
 
   onLoad: function (options) {
     _id = options._id;
+    // 查询时过滤已软删除的数据
     app.mpServerless.db.collection('ucats').find({
       _id: _id,
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {}).then(res => {
       this.setData({
         cat: res.result[0],
       });
     }).then(res => {
-      if (this.data.cat.addPhotoNumber > 0) {
-        for (var photoNum = 1; photoNum <= this.data.cat.addPhotoNumber; ++photoNum) {
-          this.setData({
-            photoArray: this.data.photoArray.concat(photoNum),
-          });
-        }
-      }
-      if (this.data.cat.movieNums > 0) {
-        for (var movieNum = 1; movieNum <= this.data.cat.movieNums; ++movieNum) {
-          this.setData({
-            movieArray: this.data.movieArray.concat(movieNum),
-          });
-        }
-      }
-      if (this.data.cat.audioNumber > 0) {
-        console.log(encodeURIComponent(this.data.cat.name))
-        for (var audioNum = 1; audioNum <= this.data.cat.audioNumber; ++audioNum) {
-          var audioTemp = {
+      // 处理音频数据
+      if (this.data.cat.audioUrls && this.data.cat.audioUrls.length > 0) {
+        const audioArr = this.data.cat.audioUrls.map((url, index) => {
+          return {
             bl: false,
-            src: this.data.url + encodeURIComponent(this.data.cat.name) + audioNum.toString() + ".m4a"
-          }
-          this.setData({
-            audioArr: this.data.audioArr.concat(audioTemp),
-          });
-        }
+            src: url
+          };
+        });
+        this.setData({
+          audioArr: audioArr
+        });
       }
+      // 处理相关猫咪数据
       if (this.data.cat.relatedCats) {
         var relatedCats = this.data.cat.relatedCats.split(" ")
         for (var i = 0; i < relatedCats.length; ++i) {
           app.mpServerless.db.collection('ucats').find({
             name: relatedCats[i],
+            isDeleted: { $ne: true } // 不显示已软删除的数据
           }, {}).then(res => {
             this.setData({
               relatedCatsId: this.data.relatedCatsId.concat(res.result),
@@ -62,6 +56,32 @@ Page({
         });
       }
     });
+  },
+
+  // 检查用户是否为管理员
+  // checkAdministrator: function() {
+  //   const that = this;
+  //   app.mpServerless.user.getInfo().then(res => {
+  //     const userId = res.result.user.userId;
+  //     app.mpServerless.db.collection('ucats_admin').find({
+  //       userId: userId
+  //     }).then(res => {
+  //       if (res.result.length > 0) {
+  //         that.setData({
+  //           isAdministrator: true
+  //         });
+  //       }
+  //     }).catch(console.error);
+  //   }).catch(console.error);
+  // },
+
+  // 编辑猫咪信息
+  editCat: function() {
+    if (this.data.isAdministrator && this.data.currentMode === this.data.MODES.ADMIN) {
+      wx.navigateTo({
+        url: '/pages/editCat/editCat?_id=' + _id,
+      });
+    }
   },
 
   //音频播放  
@@ -184,3 +204,6 @@ Page({
 })
 //创建audio控件
 const myaudio = wx.createInnerAudioContext();
+
+
+

@@ -60,7 +60,6 @@ page{
   color: #576b95;
 }
 
-
 .contentyd {
     font-size: 25rpx;
     margin-left: 40rpx;
@@ -71,4 +70,42 @@ page{
     letter-spacing: 5rpx;
     line-height: 35rpx;
     text-align: center;  
-  }
+}
+
+/* 管理员按钮样式 */
+.admin-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10rpx 20rpx 10rpx 0;
+}
+
+.add-cat-btn {
+  background-color: #576b95;
+  color: #ffffff;
+  border: 1rpx solid #576b95;
+  padding: 5rpx 15rpx;
+  font-size: 24rpx;
+  border-radius: 8rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+}
+
+.add-cat-btn::after {
+  border: none;
+}
+
+/* 管理员模式切换按钮样式 */
+.mode-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mode-toggle-btn {
+  color: #576b95;
+  font-size: 24rpx;
+  padding: 5rpx 15rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+}
