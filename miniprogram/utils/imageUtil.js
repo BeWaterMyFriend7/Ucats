@@ -16,13 +16,21 @@ function compressImage(src, quality = 80, maxWidth = 1024, maxHeight = 1024) {
     wx.getImageInfo({
       src: src,
       success: (info) => {
+        console.log('图片信息:', info);
         // 计算缩放比例
         const ratio = Math.min(maxWidth / info.width, maxHeight / info.height, 1);
         const width = info.width * ratio;
         const height = info.height * ratio;
         
+        console.log('压缩参数:', { width, height, quality });
+        
         // 创建画布
         const ctx = wx.createCanvasContext('compressCanvas', this);
+        // 设置画布尺寸
+        ctx.width = width;
+        ctx.height = height;
+        
+        // 绘制图片
         ctx.drawImage(src, 0, 0, width, height);
         ctx.draw(false, () => {
           // 导出图片
@@ -30,13 +38,20 @@ function compressImage(src, quality = 80, maxWidth = 1024, maxHeight = 1024) {
             canvasId: 'compressCanvas',
             quality: quality / 100,
             success: (res) => {
+              console.log('压缩成功:', res.tempFilePath);
               resolve(res.tempFilePath);
             },
-            fail: reject
+            fail: (err) => {
+              console.error('压缩失败:', err);
+              reject(err);
+            }
           }, this);
         });
       },
-      fail: reject
+      fail: (err) => {
+        console.error('获取图片信息失败:', err);
+        reject(err);
+      }
     });
   });
 }
@@ -49,18 +64,24 @@ function compressImage(src, quality = 80, maxWidth = 1024, maxHeight = 1024) {
  */
 function compressImageToSize(src, maxSize) {
   return new Promise((resolve, reject) => {
+    console.log('开始压缩图片到指定大小:', { src, maxSize });
+    
     // 先获取文件大小
     wx.getFileInfo({
       filePath: src,
       success: (info) => {
         const fileSize = info.size / 1024; // 转换为KB
+        console.log('原始文件大小:', fileSize, 'KB');
+        
         if (fileSize <= maxSize) {
+          console.log('文件大小已满足要求，无需压缩');
           resolve(src); // 如果已经小于目标大小，直接返回
           return;
         }
         
         // 计算压缩比例
         const quality = Math.max(30, Math.floor((maxSize / fileSize) * 100));
+        console.log('计算压缩质量:', quality);
         
         // 递归压缩直到满足大小要求
         compressImage(src, quality).then(compressedSrc => {
@@ -68,18 +89,30 @@ function compressImageToSize(src, maxSize) {
             filePath: compressedSrc,
             success: (compressedInfo) => {
               const compressedFileSize = compressedInfo.size / 1024;
+              console.log('压缩后文件大小:', compressedFileSize, 'KB');
+              
               if (compressedFileSize <= maxSize || quality <= 30) {
                 resolve(compressedSrc);
               } else {
                 // 如果还是太大，继续压缩
+                console.log('文件仍然太大，继续压缩');
                 compressImageToSize(compressedSrc, maxSize).then(resolve).catch(reject);
               }
             },
-            fail: reject
+            fail: (err) => {
+              console.error('获取压缩文件信息失败:', err);
+              reject(err);
+            }
           });
-        }).catch(reject);
+        }).catch(err => {
+          console.error('压缩图片失败:', err);
+          reject(err);
+        });
       },
-      fail: reject
+      fail: (err) => {
+        console.error('获取文件信息失败:', err);
+        reject(err);
+      }
     });
   });
 }
@@ -92,9 +125,15 @@ function compressImageToSize(src, maxSize) {
  */
 function cropAvatar(src, size = 200) {
   return new Promise((resolve, reject) => {
+    console.log('开始裁剪头像:', { src, size });
+    
     const ctx = wx.createCanvasContext('avatarCanvas', this);
+    // 设置画布尺寸
+    ctx.width = size;
+    ctx.height = size;
     
     // 画一个圆形裁剪区域
+    ctx.beginPath();
     ctx.arc(size/2, size/2, size/2, 0, 2 * Math.PI);
     ctx.clip();
     
@@ -105,9 +144,13 @@ function cropAvatar(src, size = 200) {
       wx.canvasToTempFilePath({
         canvasId: 'avatarCanvas',
         success: (res) => {
+          console.log('头像裁剪成功:', res.tempFilePath);
           resolve(res.tempFilePath);
         },
-        fail: reject
+        fail: (err) => {
+          console.error('头像裁剪失败:', err);
+          reject(err);
+        }
       }, this);
     });
   });

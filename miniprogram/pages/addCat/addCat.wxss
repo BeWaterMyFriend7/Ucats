@@ -153,8 +153,6 @@
 /* 隐藏画布 */
 .hidden-canvas {
   position: fixed;
-  top: -1000rpx;
-  left: -1000rpx;
-  width: 500rpx;
-  height: 500rpx;
+  top: -9999px;
+  left: -9999px;
 }

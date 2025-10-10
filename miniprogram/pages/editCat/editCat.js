@@ -449,18 +449,24 @@ Page({
     });
   },
 
-  // 上传文件到腾讯云COS
+  // 上传文件到阿里云OSS
   uploadToTencentCOS: function(filePath, fileName) {
     return new Promise((resolve, reject) => {
-      // 这里需要实现腾讯云COS上传逻辑
-      // 由于微信小程序限制，实际项目中可能需要通过后端服务中转
-      // 此处为示例代码，实际使用时需要替换为真实的腾讯云COS上传逻辑
-      console.log('上传文件到腾讯云COS:', filePath, fileName);
+      // 使用阿里云MPServerless的文件上传功能
+      const fileExtension = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
+      const newFileName = `${fileName}_${Date.now()}${fileExtension}`;
       
-      // 模拟上传成功，返回腾讯云COS的URL
-      // 实际项目中应该调用腾讯云COS的API进行上传
-      const cosUrl = `https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/Ucats_pic/${fileName}_${Date.now()}`;
-      resolve(cosUrl);
+      app.mpServerless.file.uploadFile({
+        filePath: filePath,
+        fileName: newFileName,
+        extension: fileExtension
+      }).then(res => {
+        // 上传成功后，返回文件访问URL
+        resolve(res.fileUrl);
+      }).catch(err => {
+        console.error('上传文件失败', err);
+        reject(err);
+      });
     });
   },
 
@@ -613,4 +619,8 @@ Page({
 const myaudio = wx.createInnerAudioContext({
   useWebAudioImplement: true
 });
+
+
+
+
 

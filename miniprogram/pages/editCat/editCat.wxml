@@ -289,5 +289,5 @@
 <text> \n </text>
 
 <!-- 隐藏的画布用于图片处理 -->
-<canvas class="hidden-canvas" canvas-id="compressCanvas" style="width: 0; height: 0;"></canvas>
-<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="width: 0; height: 0;"></canvas>
+<canvas class="hidden-canvas" canvas-id="compressCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
+<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 200px; height: 200px;"></canvas>
