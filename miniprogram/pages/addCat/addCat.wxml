@@ -12,12 +12,22 @@
 <view class="head1">
   <text user-select="true">头像</text>
 </view>
-<view class="image-upload-container">
-  <view class="avatar-preview" bindtap="chooseAvatar">
-    <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
-    <view wx:else class="avatar-placeholder">
-      <text>点击上传头像</text>
-    </view>
+
+<!-- 裁剪预览界面 -->
+<view wx:if="{{showCropper}}" class="cropper-overlay">
+  <my-cropper 
+    bind:close="hideCropper" 
+    imageSrc="{{originalAvatarUrl}}" 
+    cutRatio="{{1}}"
+    bind:confirm="onCropConfirm"
+  ></my-cropper>
+</view>
+
+<!-- 头像预览界面 -->
+<view class="avatar-preview" bindtap="chooseAvatar">
+  <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill" ></image>
+  <view wx:else class="avatar-placeholder">
+    <text>点击上传头像</text>
   </view>
 </view>
 
@@ -65,7 +75,7 @@
 <view class="image-upload-section">
   <view class="image-grid">
     <view wx:for="{{imageList}}" wx:key="index" class="image-item">
-      <image class="uploaded-image" src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"></image>
+      <image class="uploaded-image" src="{{item.url}}" mode="aspectFit" style="width: 100%; height: 100%;" bindtap="previewImage" data-index="{{index}}"></image>
       <view class="image-actions">
         <view class="set-cover-btn" bindtap="setCoverImage" data-index="{{index}}">
           <text wx:if="{{item.isCover}}">首图</text>
@@ -228,5 +238,5 @@
 <text> \n </text>
 
 <!-- 隐藏的画布用于图片处理 -->
+<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
 <canvas class="hidden-canvas" canvas-id="compressCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
-<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 200px; height: 200px;"></canvas>

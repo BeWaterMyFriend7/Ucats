@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@alicloud/mpserverless-sdk": "^3.1.5"
+    "@alicloud/mpserverless-sdk": "^3.1.5",
+    "@dw/wx-cropper": "^1.0.6"
   }
 }

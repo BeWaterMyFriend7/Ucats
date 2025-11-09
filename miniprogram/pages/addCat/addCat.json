@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+     "my-cropper": "@dw/wx-cropper"
+  },
   "navigationBarTitleText": "添加猫咪"
 }

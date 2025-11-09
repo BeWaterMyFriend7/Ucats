@@ -13,6 +13,17 @@
 <view class="head1">
   <text user-select="true">头像</text>
 </view>
+
+<!-- 裁剪组件 -->
+<view wx:if="{{showCropper}}" class="cropper-overlay">
+  <my-cropper 
+    bind:close="hideCropper" 
+    imageSrc="{{originalAvatarUrl}}" 
+    cutRatio="{{1}}"
+    bind:confirm="onCropConfirm"
+  ></my-cropper>
+</view>
+
 <view class="image-upload-container">
   <view class="avatar-preview" bindtap="chooseAvatar">
     <image wx:if="{{avatarUrl || cat.avatarUrl}}" class="avatar-image" src="{{avatarUrl || cat.avatarUrl}}" mode="aspectFill"></image>
@@ -290,4 +301,4 @@
 
 <!-- 隐藏的画布用于图片处理 -->
 <canvas class="hidden-canvas" canvas-id="compressCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
-<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 200px; height: 200px;"></canvas>
+<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 300px; height: 300px;"></canvas>

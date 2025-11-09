@@ -21,9 +21,13 @@ Page({
     picker_selected: {},
     // 文件上传相关数据
     avatarUrl: '', // 新上传的头像URL
+    originalAvatarUrl: '', // 原始头像URL（用于裁剪）
     newImageList: [], // 新增的图片列表
     newVideoList: [], // 新增的视频列表
     newAudioList: [], // 新增的音频列表
+    
+    // 裁剪器相关数据
+    showCropper: false
   },
 
   onLoad: function (options) {
@@ -58,31 +62,68 @@ Page({
 
   // 选择头像
   chooseAvatar: function() {
+    const self = this
     wx.chooseImage({
       count: 1,
-      sizeType: ['compressed'],
+      sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0];
-        // 压缩头像到50KB并裁剪为圆形
-        imageUtil.compressImageToSize(tempFilePath, 50)
-          .then(compressedPath => {
-            return imageUtil.cropAvatar(compressedPath, 200);
-          })
-          .then(croppedPath => {
-            this.setData({
-              avatarUrl: croppedPath
-            });
-          })
-          .catch(err => {
-            console.error('头像处理失败', err);
-            wx.showToast({
-              title: '头像处理失败',
-              icon: 'none'
-            });
-          });
+        self.setData({ 
+          originalAvatarUrl: tempFilePath,
+          showCropper: true
+        });
       }
     });
+  },
+
+  // 裁剪确认回调
+  onCropConfirm(e) {
+    console.log('裁剪确认:', e);
+    this.setData({ showCropper: false });
+    
+    const img = e.detail;
+    if (!img || !img.path) {
+      console.error('裁剪后的图片路径无效');
+      wx.showToast({
+        title: '裁剪失败，请重试',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    const croppedImagePath = img.path;
+    
+    // 压缩图片到50KB并显示在预览框
+    console.log('开始压缩头像:', croppedImagePath);
+    imageUtil.compressAvatarTo50KB(croppedImagePath)
+      .then(compressedPath => {
+        console.log('头像压缩成功:', compressedPath);
+        this.setData({ 
+          avatarUrl: compressedPath
+        });
+        // 显示压缩成功的提示
+        wx.showToast({
+          title: '头像处理完成',
+          icon: 'success'
+        });
+      })
+      .catch(err => {
+        console.error('头像压缩失败:', err);
+        wx.showToast({
+          title: '头像压缩失败，使用原始图片',
+          icon: 'none'
+        });
+        // 如果压缩失败，使用原始裁剪图片
+        this.setData({ 
+          avatarUrl: croppedImagePath
+        });
+      });
+  },
+
+  // 关闭裁剪器
+  hideCropper() {
+    this.setData({ showCropper: false })
   },
 
   // 选择图片
@@ -106,27 +147,57 @@ Page({
         
         // 处理每张图片
         tempFilePaths.forEach((filePath, index) => {
-          imageUtil.compressImageToSize(filePath, 200)
-            .then(compressedPath => {
-              newImages.push({
-                url: compressedPath,
-                isCover: false // 默认不设为首图
-              });
+          // 先获取图片信息
+          wx.getFileInfo({
+            filePath: filePath,
+            success: (info) => {
+              const fileSize = info.size / 1024; // 转换为KB
+              console.log('选择的图片大小:', fileSize, 'KB');
               
-              // 如果所有图片都处理完成，更新数据
-              if (newImages.length === tempFilePaths.length) {
-                this.setData({
-                  newImageList: [...this.data.newImageList, ...newImages]
-                });
+              // 根据图片大小选择不同的处理策略，统一使用compressToTargetSize函数
+              let targetSize;
+              if (fileSize > 1000) {
+                // 大图片压缩到150KB
+                targetSize = 150;
+              } else if (fileSize > 500) {
+                // 中等图片压缩到200KB
+                targetSize = 200;
+              } else {
+                // 小图片压缩到250KB
+                targetSize = 250;
               }
-            })
-            .catch(err => {
-              console.error('图片处理失败', err);
+              
+              // 使用compressToTargetSize函数进行压缩
+              imageUtil.compressToTargetSize(filePath, targetSize)
+                .then(compressedPath => {
+                  newImages.push({
+                    url: compressedPath,
+                    isCover: false // 默认不设为首图
+                  });
+                  
+                  // 如果所有图片都处理完成，更新数据
+                  if (newImages.length === tempFilePaths.length) {
+                    this.setData({
+                      newImageList: [...this.data.newImageList, ...newImages]
+                    });
+                  }
+                })
+                .catch(err => {
+                  console.error('图片处理失败', err);
+                  wx.showToast({
+                    title: '图片处理失败',
+                    icon: 'none'
+                  });
+                });
+            },
+            fail: (err) => {
+              console.error('获取图片信息失败', err);
               wx.showToast({
-                title: '图片处理失败',
+                title: '获取图片信息失败',
                 icon: 'none'
               });
-            });
+            }
+          });
         });
       }
     });
@@ -619,6 +690,19 @@ Page({
 const myaudio = wx.createInnerAudioContext({
   useWebAudioImplement: true
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
