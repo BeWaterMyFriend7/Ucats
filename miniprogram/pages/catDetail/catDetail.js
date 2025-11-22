@@ -10,13 +10,23 @@ Page({
     audioArr: [],
     movieArray: [],
     // 添加管理员模式相关数据
-    isAdministrator: app.globalData.isAdministrator,
-    currentMode: app.globalData.currentMode,
-    MODES: app.globalData.MODES
+    isAdministrator: false,
+    currentMode: 'NORMAL',
+    MODES: {
+      NORMAL: 'NORMAL',
+      ADMIN: 'ADMIN'
+    }
   },
 
   onLoad: function (options) {
     _id = options._id;
+    // 更新管理员状态和模式
+    this.setData({
+      isAdministrator: app.globalData.isAdministrator,
+      currentMode: app.globalData.currentMode,
+      MODES: app.globalData.MODES
+    });
+    
     // 查询时过滤已软删除的数据
     app.mpServerless.db.collection('ucats').find({
       _id: _id,
@@ -27,8 +37,8 @@ Page({
       });
     }).then(res => {
       // 处理音频数据
-      if (this.data.cat.audioUrls && this.data.cat.audioUrls.length > 0) {
-        const audioArr = this.data.cat.audioUrls.map((url, index) => {
+      if (this.data.cat.audioUrlList && this.data.cat.audioUrlList.length > 0) {
+        const audioArr = this.data.cat.audioUrlList.map((url, index) => {
           return {
             bl: false,
             src: url
@@ -58,6 +68,16 @@ Page({
     });
   },
 
+  // 每次页面显示时更新管理员状态
+  onShow: function() {
+    // 更新管理员状态和模式
+    this.setData({
+      isAdministrator: app.globalData.isAdministrator,
+      currentMode: app.globalData.currentMode,
+      MODES: app.globalData.MODES
+    });
+  },
+
   // 检查用户是否为管理员
   // checkAdministrator: function() {
   //   const that = this;
@@ -77,7 +97,7 @@ Page({
 
   // 编辑猫咪信息
   editCat: function() {
-    if (this.data.isAdministrator && this.data.currentMode === this.data.MODES.ADMIN) {
+    if (this.data.isAdministrator && this.data.currentMode === 'ADMIN') {
       wx.navigateTo({
         url: '/pages/editCat/editCat?_id=' + _id,
       });

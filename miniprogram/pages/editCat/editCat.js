@@ -25,6 +25,9 @@ Page({
     newImageList: [], // 新增的图片列表
     newVideoList: [], // 新增的视频列表
     newAudioList: [], // 新增的音频列表
+    newFirstImageUrl: '', // 新选择的首图URL
+    removeFirstImage: false, // 是否删除首图标记
+    removedImageUrls: [], // 被删除的图片URL列表
     
     // 裁剪器相关数据
     showCropper: false
@@ -128,7 +131,7 @@ Page({
 
   // 选择图片
   chooseImage: function() {
-    const currentCount = (this.data.cat.imageUrls ? this.data.cat.imageUrls.length : 0) + this.data.newImageList.length;
+    const currentCount = (this.data.cat.firstImageUrl ? 1 : 0) + (this.data.cat.imageUrlList ? this.data.cat.imageUrlList.length : 0) + this.data.newImageList.length;
     if (currentCount >= 5) {
       wx.showToast({
         title: '最多只能上传5张图片',
@@ -205,7 +208,7 @@ Page({
 
   // 选择视频
   chooseVideo: function() {
-    const currentCount = (this.data.cat.videoUrls ? this.data.cat.videoUrls.length : 0) + this.data.newVideoList.length;
+    const currentCount = (this.data.cat.videoUrlList ? this.data.cat.videoUrlList.length : 0) + this.data.newVideoList.length;
     if (currentCount >= 2) {
       wx.showToast({
         title: '最多只能上传2个视频',
@@ -247,7 +250,7 @@ Page({
 
   // 选择音频
   chooseAudio: function() {
-    const currentCount = (this.data.cat.audioUrls ? this.data.cat.audioUrls.length : 0) + this.data.newAudioList.length;
+    const currentCount = (this.data.cat.audioUrlList ? this.data.cat.audioUrlList.length : 0) + this.data.newAudioList.length;
     if (currentCount >= 3) {
       wx.showToast({
         title: '最多只能上传3个音频',
@@ -295,76 +298,178 @@ Page({
     });
   },
 
-  // 设置首图（新上传的图片）
-  setNewCoverImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const newImageList = this.data.newImageList.map((item, i) => {
-      return {
-        ...item,
-        isCover: i === index
-      };
-    });
-    
-    // 同时取消现有图片的首图标记
-    const cat = this.data.cat;
-    if (cat.imageUrls) {
-      cat.imageUrls = cat.imageUrls.map(item => ({
-        ...item,
-        isCover: false
-      }));
-    }
-    
-    this.setData({
-      newImageList: newImageList,
-      cat: cat
+  // 选择首图
+  chooseCoverImage: function() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        
+        // 获取图片信息并压缩
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (info) => {
+            const fileSize = info.size / 1024; // 转换为KB
+            
+            // 根据图片大小选择压缩目标
+            let targetKB;
+            if (fileSize > 1000) {
+              targetKB = 150;
+            } else if (fileSize > 500) {
+              targetKB = 200;
+            } else {
+              targetKB = 250;
+            }
+            
+            imageUtil.compressToTargetSize(tempFilePath, targetKB)
+              .then(compressedPath => {
+                // 新首图存储在临时数据中，上传时再更新到数据库
+                this.setData({ 
+                  newFirstImageUrl: compressedPath 
+                });
+                
+                // 立即更新预览显示
+                const cat = this.data.cat;
+                cat.firstImageUrl = compressedPath;
+                this.setData({ cat: cat });
+                
+                wx.showToast({
+                  title: '首图选择成功',
+                  icon: 'success'
+                });
+              })
+              .catch(err => {
+                console.error('图片处理失败', err);
+                wx.showToast({
+                  title: '图片处理失败',
+                  icon: 'none'
+                });
+              });
+          },
+          fail: (err) => {
+            console.error('获取图片信息失败', err);
+            wx.showToast({
+              title: '获取图片信息失败',
+              icon: 'none'
+            });
+          }
+        });
+      }
     });
   },
 
-  // 设置首图（现有图片）
-  setCoverImage: function(e) {
+  // 删除首图
+  removeCoverImage: function() {
+    wx.showModal({
+      title: '提示',
+      content: '确定删除首图吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 标记删除首图
+          this.setData({ 
+            removeFirstImage: true,
+            newFirstImageUrl: '' 
+          });
+          
+          // 立即更新预览显示
+          const cat = this.data.cat;
+          cat.firstImageUrl = '';
+          this.setData({ cat: cat });
+          
+          wx.showToast({
+            title: '首图已删除',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
+  // 将现有图片设为首图
+  setAsCoverImage: function(e) {
     const index = e.currentTarget.dataset.index;
     const cat = this.data.cat;
     
-    if (cat.imageUrls) {
-      cat.imageUrls = cat.imageUrls.map((item, i) => {
-        return {
-          ...item,
-          isCover: i === index
-        };
+    if (cat.imageUrlList && cat.imageUrlList[index]) {
+      // 将选中的图片设为首图
+      cat.firstImageUrl = cat.imageUrlList[index];
+      // 从图片列表中移除该图片
+      cat.imageUrlList = cat.imageUrlList.filter((_, i) => i !== index);
+      this.setData({ cat: cat });
+      wx.showToast({
+        title: '已设为首图',
+        icon: 'success'
       });
     }
+  },
+
+  // 将新上传图片设为首图
+  setNewAsCoverImage: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const cat = this.data.cat;
+    const newImageList = this.data.newImageList;
     
-    // 同时取消新图片的首图标记
-    const newImageList = this.data.newImageList.map(item => ({
-      ...item,
-      isCover: false
-    }));
-    
-    this.setData({
-      cat: cat,
-      newImageList: newImageList
-    });
+    if (newImageList[index]) {
+      // 将选中的图片设为首图
+      cat.firstImageUrl = newImageList[index].url;
+      // 从新图片列表中移除该图片
+      this.data.newImageList = newImageList.filter((_, i) => i !== index);
+      this.setData({ 
+        cat: cat,
+        newImageList: this.data.newImageList
+      });
+      wx.showToast({
+        title: '已设为首图',
+        icon: 'success'
+      });
+    }
   },
 
   // 删除新上传的图片
   removeNewImage: function(e) {
     const index = e.currentTarget.dataset.index;
-    const newImageList = this.data.newImageList.filter((_, i) => i !== index);
-    this.setData({
-      newImageList: newImageList
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这张新上传的图片吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const newImageList = this.data.newImageList.filter((_, i) => i !== index);
+          this.setData({
+            newImageList: newImageList
+          });
+        }
+      }
     });
   },
 
   // 删除现有图片
   removeExistingImage: function(e) {
     const index = e.currentTarget.dataset.index;
-    const cat = this.data.cat;
-    if (cat.imageUrls) {
-      cat.imageUrls = cat.imageUrls.filter((_, i) => i !== index);
-      this.setData({
-        cat: cat
-      });
-    }
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这张现有图片吗？删除后需要保存才能生效。',
+      success: (res) => {
+        if (res.confirm) {
+          const cat = this.data.cat;
+          if (cat.imageUrlList && cat.imageUrlList[index]) {
+            // 记录被删除的图片URL
+            const removedImageUrl = cat.imageUrlList[index];
+            const removedImageUrls = [...this.data.removedImageUrls, removedImageUrl];
+            
+            // 从显示列表中移除
+            cat.imageUrlList = cat.imageUrlList.filter((_, i) => i !== index);
+            this.setData({
+              cat: cat,
+              removedImageUrls: removedImageUrls
+            });
+          }
+        }
+      }
+    });
   },
 
   // 删除新上传的视频
@@ -380,8 +485,8 @@ Page({
   removeExistingVideo: function(e) {
     const index = e.currentTarget.dataset.index;
     const cat = this.data.cat;
-    if (cat.videoUrls) {
-      cat.videoUrls = cat.videoUrls.filter((_, i) => i !== index);
+    if (cat.videoUrlList) {
+      cat.videoUrlList = cat.videoUrlList.filter((_, i) => i !== index);
       this.setData({
         cat: cat
       });
@@ -401,8 +506,8 @@ Page({
   removeExistingAudio: function(e) {
     const index = e.currentTarget.dataset.index;
     const cat = this.data.cat;
-    if (cat.audioUrls) {
-      cat.audioUrls = cat.audioUrls.filter((_, i) => i !== index);
+    if (cat.audioUrlList) {
+      cat.audioUrlList = cat.audioUrlList.filter((_, i) => i !== index);
       this.setData({
         cat: cat
       });
@@ -477,16 +582,23 @@ Page({
         );
       }
       
+      // 上传新首图到腾讯云COS
+      if (this.data.newFirstImageUrl) {
+        uploadPromises.push(
+          this.uploadToTencentCOS(this.data.newFirstImageUrl, 'firstImage')
+            .then(url => {
+              fileKeys.firstImage = url;
+            })
+        );
+      }
+      
       // 上传新图片到腾讯云COS
       this.data.newImageList.forEach((image, index) => {
         uploadPromises.push(
           this.uploadToTencentCOS(image.url, `image_${index}`)
             .then(url => {
               if (!fileKeys.newImages) fileKeys.newImages = [];
-              fileKeys.newImages.push({
-                url: url,
-                isCover: image.isCover
-              });
+              fileKeys.newImages.push(url);
             })
         );
       });
@@ -554,15 +666,30 @@ Page({
           // 先上传新文件
           this.uploadNewFiles()
             .then(fileKeys => {
-              // 合并现有文件和新文件
-              const imageUrls = [...(this.data.cat.imageUrls || [])];
-              const videoUrls = [...(this.data.cat.videoUrls || [])];
-              const audioUrls = [...(this.data.cat.audioUrls || [])];
+              // 处理首图和图片列表
+              let firstImageUrl = '';
+              let imageUrls = [...(this.data.cat.imageUrlList || [])];
+              const videoUrls = [...(this.data.cat.videoUrlList || [])];
+              const audioUrls = [...(this.data.cat.audioUrlList || [])];
               
-              // 添加新上传的文件
-              if (fileKeys.newImages) {
+              // 处理首图：优先使用新上传的，否则检查是否删除了原首图
+              if (fileKeys.firstImage) {
+                firstImageUrl = fileKeys.firstImage;
+              } else if (!this.data.removeFirstImage && this.data.cat.firstImageUrl) {
+                firstImageUrl = this.data.cat.firstImageUrl;
+              }
+              
+              // 移除被删除的图片
+              if (this.data.removedImageUrls.length > 0) {
+                imageUrls = imageUrls.filter(url => !this.data.removedImageUrls.includes(url));
+              }
+              
+              // 处理新上传的图片
+              if (fileKeys.newImages && fileKeys.newImages.length > 0) {
                 imageUrls.push(...fileKeys.newImages);
               }
+              
+              // 添加新上传的视频和音频
               if (fileKeys.newVideos) {
                 videoUrls.push(...fileKeys.newVideos);
               }
@@ -575,7 +702,7 @@ Page({
                 _id: this.data.cat._id
               }, {
                 $set: {
-                  addPhotoNumber: imageUrls.length,
+                  addPhotoNumber: imageUrls.length + (firstImageUrl ? 1 : 0),
                   audioNumber: audioUrls.length,
                   movieNums: videoUrls.length,
                   isAdoption: this.data.cat.isAdoption,
@@ -604,9 +731,10 @@ Page({
                   lastEditAdministrator: app.globalData.Administrator,
                   // 更新文件链接（腾讯云COS的URL）
                   avatarUrl: fileKeys.avatar || this.data.cat.avatarUrl || '',
-                  imageUrls: imageUrls,
-                  videoUrls: videoUrls,
-                  audioUrls: audioUrls,
+                  firstImageUrl: firstImageUrl,
+                  imageUrlList: imageUrls,
+                  videoUrlList: videoUrls,
+                  audioUrlList: audioUrls,
                   // 保持软删除标记
                   isDeleted: this.data.cat.isDeleted !== undefined ? this.data.cat.isDeleted : false
                 }
@@ -660,7 +788,12 @@ Page({
               icon: 'success',
               title: '删除成功',
             });
-            wx.navigateBack()
+            // 删除成功后回到首页
+            setTimeout(() => {
+              wx.reLaunch({
+                url: '/pages/index/index'
+              });
+            }, 1500);
           }).catch(err => {
             console.error(err);
             wx.showToast({

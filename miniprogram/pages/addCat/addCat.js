@@ -29,6 +29,7 @@ Page({
     // 文件上传相关数据
     avatarUrl: '', // 头像URL
     originalAvatarUrl: '', // 原始头像URL（用于裁剪）
+    firstImageUrl: '', // 首图URL
     imageList: [], // 图片列表
     videoList: [], // 视频列表
     audioList: [], // 音频列表
@@ -109,9 +110,80 @@ Page({
     }
   },
 
+  // 选择首图
+  chooseFirstImage: function() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        
+        // 获取图片信息并压缩
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (info) => {
+            const fileSize = info.size / 1024; // 转换为KB
+            
+            // 根据图片大小选择压缩目标
+            let targetKB;
+            if (fileSize > 1000) {
+              targetKB = 150;
+            } else if (fileSize > 500) {
+              targetKB = 200;
+            } else {
+              targetKB = 250;
+            }
+            
+            imageUtil.compressToTargetSize(tempFilePath, targetKB)
+              .then(compressedPath => {
+                this.setData({ firstImageUrl: compressedPath });
+                wx.showToast({
+                  title: '首图选择成功',
+                  icon: 'success'
+                });
+              })
+              .catch(err => {
+                console.error('图片处理失败', err);
+                wx.showToast({
+                  title: '图片处理失败',
+                  icon: 'none'
+                });
+              });
+          },
+          fail: (err) => {
+            console.error('获取图片信息失败', err);
+            wx.showToast({
+              title: '获取图片信息失败',
+              icon: 'none'
+            });
+          }
+        });
+      }
+    });
+  },
+
+  // 删除首图
+  removeFirstImage: function() {
+    wx.showModal({
+      title: '提示',
+      content: '确定删除首图吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({ firstImageUrl: '' });
+          wx.showToast({
+            title: '首图已删除',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
   // 选择图片
   chooseImage: function() {
-    if (this.data.imageList.length >= 5) {
+    const currentCount = (this.data.firstImageUrl ? 1 : 0) + this.data.imageList.length;
+    if (currentCount >= 5) {
       wx.showToast({
         title: '最多只能上传5张图片',
         icon: 'none'
@@ -150,8 +222,7 @@ Page({
               imageUtil.compressToTargetSize(filePath, targetKB)
                 .then(compressedPath => {
                   newImages.push({
-                    url: compressedPath,
-                    isCover: this.data.imageList.length + newImages.length === 0 // 第一张设为首图
+                    url: compressedPath
                   });
                   
                   // 如果所有图片都处理完成，更新数据
@@ -295,24 +366,33 @@ Page({
   // 删除图片
   removeImage: function(e) {
     const index = e.currentTarget.dataset.index;
-    const imageList = this.data.imageList.filter((_, i) => i !== index);
     
-    // 如果删除的是首图，将第一张设为新的首图
-    if (imageList.length > 0 && imageList.some(item => item.isCover)) {
-      const newImageList = imageList.map((item, i) => {
-        return {
-          ...item,
-          isCover: i === 0 && !imageList.some(img => img.isCover)
-        };
-      });
-      this.setData({
-        imageList: newImageList
-      });
-    } else {
-      this.setData({
-        imageList: imageList
-      });
-    }
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这张图片吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const imageList = this.data.imageList.filter((_, i) => i !== index);
+    
+          // 如果删除的是首图，将第一张设为新的首图
+          if (imageList.length > 0 && imageList.some(item => item.isCover)) {
+            const newImageList = imageList.map((item, i) => {
+              return {
+                ...item,
+                isCover: i === 0 && !imageList.some(img => img.isCover)
+              };
+            });
+            this.setData({
+              imageList: newImageList
+            });
+          } else {
+            this.setData({
+              imageList: imageList
+            });
+          }
+        }
+      }
+    });
   },
 
   // 删除视频
@@ -381,16 +461,23 @@ Page({
         );
       }
       
+      // 上传首图到腾讯云COS
+      if (this.data.firstImageUrl) {
+        uploadPromises.push(
+          this.uploadToTencentCOS(this.data.firstImageUrl, 'firstImage')
+            .then(url => {
+              fileKeys.firstImage = url;
+            })
+        );
+      }
+      
       // 上传图片到腾讯云COS
       this.data.imageList.forEach((image, index) => {
         uploadPromises.push(
           this.uploadToTencentCOS(image.url, `image_${index}`)
             .then(url => {
               if (!fileKeys.images) fileKeys.images = [];
-              fileKeys.images.push({
-                url: url,
-                isCover: image.isCover
-              });
+              fileKeys.images.push(url);
             })
         );
       });
@@ -424,103 +511,164 @@ Page({
     });
   },
 
-  // 上传文件到阿里云OSS
+  // 上传文件到腾讯云COS
   uploadToTencentCOS: function(filePath, fileName) {
+    // 使用腾讯云 COS 客户端上传（选项 A：客户端使用后端签名）
     return new Promise((resolve, reject) => {
-      // 使用阿里云MPServerless的文件上传功能
+      const cosImagePath = app.globalData.cosImagePath;
       const fileExtension = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
-      const newFileName = `${fileName}_${Date.now()}${fileExtension}`;
-      
-      app.mpServerless.file.uploadFile({
-        filePath: filePath,
-        fileName: newFileName,
-        extension: fileExtension
-      }).then(res => {
-        // 上传成功后，返回文件访问URL
-        resolve(res.fileUrl);
-      }).catch(err => {
-        console.error('上传文件失败', err);
-        reject(err);
+      const newFileName = `${cosImagePath}/${fileName}_${Date.now()}${fileExtension}`;
+
+  // 读取需要的 config（请在 app.globalData 中配置 cosBucket, cosRegion, cosSignUrl）
+      const cosBucket = app.globalData.cosBucket;
+      const cosRegion = app.globalData.cosRegion;
+
+      // 引入 cos-wx-sdk-v5（请确保已将 SDK 放到 miniprogram_npm 或 utils 中）
+      let COS;
+      try {
+        COS = require('../../utils/cos-wx-sdk-v5.js'); 
+      } catch (e) {
+        console.error('无法加载 cos-wx-sdk-v5，请先安装 SDK 或把其放入 miniprogram_npm 目录', e);
+        reject(e);
+        return;
+      }
+
+      const cos = new COS({
+        SecretId: app.globalData.cosSecretId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
+        SecretKey: app.globalData.cosSecretKey, // 推荐使用环境变量获取；用户的 SecretKey，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
+      });
+      // 开始上传
+      cos.uploadFile({
+        Bucket: cosBucket,
+        Region: cosRegion,
+        Key: newFileName,
+        FilePath: filePath,
+        onProgress: function(info) {
+          // 可选：可以在这里上报进度
+          console.log('upload progress', info);
+        }},
+        function(err, data) {
+          if (err) {
+            console.error('上传失败:', err);
+            reject(err);
+            return;
+          }else {
+            console.log('上传成功返回结果:', data); // 打印完整返回结果
+            const fileUrl = `https://${cosBucket}.cos.${cosRegion}.myqcloud.com/${newFileName}`;
+            console.log('生成的URL:', fileUrl); // 打印生成的URL
+            resolve(fileUrl);
+          }
       });
     });
   },
 
   upload() {
+    // 校验必填项：名字、头像、猫色分类、至少一张图片
+    const name = (this.data.cat && this.data.cat.name) ? this.data.cat.name.trim() : '';
+    const avatar = this.data.avatarUrl;
+    const classification = this.data.cat && this.data.cat.classification;
+    const imageCount = this.data.imageList ? this.data.imageList.length : 0;
+
+    if (!name) {
+      wx.showToast({ title: '请填写名字', icon: 'none' });
+      return;
+    }
+    if (!avatar) {
+      wx.showToast({ title: '请上传头像', icon: 'none' });
+      return;
+    }
+    if (!classification && classification !== 0) {
+      wx.showToast({ title: '请选择猫色分类', icon: 'none' });
+      return;
+    }
+    if (imageCount < 1) {
+      wx.showToast({ title: '请至少上传一张图片', icon: 'none' });
+      return;
+    }
+
+    // 二次确认
     wx.showModal({
-      title: '提示',
+      title: '确认',
       content: '确定添加猫吗？',
       success: (res) => {
-        if (res.confirm) {
-          wx.showLoading({
-            title: '更新中...',
-          });
-          
-          // 先上传文件
-          this.uploadFiles()
-            .then(fileKeys => {
-              // 文件上传成功后，保存猫咪信息
-              return app.mpServerless.db.collection('ucats').insertOne({
-                name: this.data.cat.name,
-                addPhotoNumber: this.data.imageList.length,
-                movieNums: this.data.videoList.length,
-                nickName: this.data.cat.nickName,
-                audioNumber: this.data.audioList.length,
-                furColor: this.data.cat.furColor,
-                classification: this.data.cat.classification,
-                gender: this.data.cat.gender,
-                isAdoption: this.data.cat.isAdoption,
-                status: this.data.cat.status,
-                isSterilization: this.data.cat.isSterilization,
-                sterilizationTime: this.data.cat.sterilizationTime,
-                vaccine: this.data.cat.vaccine,
-                character: this.data.cat.character,
-                firstSightingTime: this.data.cat.firstSightingTime,
-                appearance: this.data.cat.appearance,
-                missingTime: this.data.cat.missingTime,
-                relationship: this.data.cat.relationship,
-                moreInformation: this.data.cat.moreInformation,
-                notes: this.data.cat.notes,
-                deliveryTime: this.data.cat.deliveryTime,
-                deathTime: this.data.cat.deathTime,
-                deathReason: this.data.cat.deathReason,
-                location: this.data.cat.location,
-                birthTime: this.data.cat.birthTime,
-                relatedCats: this.data.cat.relatedCats,
-                lastEditTime: Date(),
-                lastEditAdministrator: app.globalData.Administrator,
-                // 添加文件链接（腾讯云COS的URL）
-                avatarUrl: fileKeys.avatar || '',
-                imageUrls: fileKeys.images || [],
-                videoUrls: fileKeys.videos || [],
-                audioUrls: fileKeys.audios || [],
-                // 软删除标记
-                isDeleted: false
-              });
-            })
-            .then(res => {
-              wx.hideLoading();
-              wx.showToast({
-                icon: 'success',
-                title: '操作成功',
-              });
-              // 返回上一页
-              setTimeout(() => {
+        if (!res.confirm) return;
+
+        wx.showLoading({ title: '提交中...', mask: true });
+
+        // 上传所有文件（头像、图片、视频、音频）
+        this.uploadFiles()
+          .then(fileKeys => {
+              console.log("pack data");
+              
+              // 处理首图和图片列表
+              const firstImageUrl = fileKeys.firstImage || '';
+              const imageUrls = fileKeys.images || [];
+              
+            // 构建要保存到数据库的记录
+            const record = {
+              name: name,
+              addPhotoNumber: (firstImageUrl ? 1 : 0) + imageUrls.length,
+              movieNums: this.data.videoList.length,
+              nickName: this.data.cat.nickName || '',
+              audioNumber: this.data.audioList.length,
+              furColor: this.data.cat.furColor || '',
+              classification: this.data.cat.classification,
+              gender: this.data.cat.gender || '',
+              isAdoption: this.data.cat.isAdoption || '',
+              status: this.data.cat.status || '',
+              isSterilization: this.data.cat.isSterilization || '',
+              sterilizationTime: this.data.cat.sterilizationTime || '',
+              vaccine: this.data.cat.vaccine || '',
+              character: this.data.cat.character || '',
+              firstSightingTime: this.data.cat.firstSightingTime || '',
+              appearance: this.data.cat.appearance || '',
+              missingTime: this.data.cat.missingTime || '',
+              relationship: this.data.cat.relationship || '',
+              moreInformation: this.data.cat.moreInformation || '',
+              notes: this.data.cat.notes || '',
+              deliveryTime: this.data.cat.deliveryTime || '',
+              deathTime: this.data.cat.deathTime || '',
+              deathReason: this.data.cat.deathReason || '',
+              location: this.data.cat.location || '',
+              birthTime: this.data.cat.birthTime || '',
+              relatedCats: this.data.cat.relatedCats || '',
+              lastEditTime: Date(),
+              lastEditAdministrator: app.globalData.Administrator || '',
+              // 头像独立存储
+              avatarUrl: fileKeys.avatar || this.data.avatarUrl || '',
+              // 首图（背景图）
+              firstImageUrl: firstImageUrl,
+              // 图片列表
+              imageUrlList: imageUrls,
+              // 视频和音频列表
+              videoUrlList: fileKeys.videos || [],
+              audioUrlList: fileKeys.audios || [],
+              isDeleted: false
+            };
+
+            // 插入数据库
+            return app.mpServerless.db.collection('ucats').insertOne(record);
+          })
+          .then(() => {
+            wx.hideLoading();
+            wx.showToast({ title: '添加成功', icon: 'success' });
+            // 成功后返回首页
+            setTimeout(() => {
+              try {
+                wx.reLaunch({ url: '/pages/index/index' });
+              } catch (e) {
                 wx.navigateBack();
-              }, 1500);
-            })
-            .catch(err => {
-              wx.hideLoading();
-              console.error(err);
-              wx.showToast({
-                icon: 'error',
-                title: '操作失败',
-              });
-            });
-        } else if (res.cancel) {
-          console.log('用户点击取消')
-        }
+              }
+            }, 1200);
+          })
+          .catch(err => {
+            wx.hideLoading();
+            console.error('提交失败：', err);
+            wx.showToast({ title: '提交失败，请重试', icon: 'none' });
+            // 保持在当前页面，用户可重试
+          });
       }
-    })
+    });
   },
 
   // 输入了东西

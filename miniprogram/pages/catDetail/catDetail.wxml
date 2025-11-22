@@ -1,7 +1,7 @@
 <view style="display:flex; justify-content:center; align-items:center;">
-  <!-- 使用数据库中存储的头像URL -->
+  <!-- 使用数据库中存储的首图URL（背景图） -->
   <image wx:if="{{cat.firstImageUrl}}" mode="widthFix" bindtap='previewImage' class="cat_image" data-src="{{cat.firstImageUrl}}" src="{{cat.firstImageUrl}}" style="width: 90%;"></image>
-  <!-- 如果没有头像URL，则使用默认方式 -->
+  <!-- 如果没有首图URL，则使用默认方式 -->
   <image wx:else mode="widthFix" bindtap='previewImage' class="cat_image" data-src="{{url}}{{cat.name}}.jpg" src="{{url}}{{cat.name}}.jpg" style="width: 90%;">
   </image>
 </view>
