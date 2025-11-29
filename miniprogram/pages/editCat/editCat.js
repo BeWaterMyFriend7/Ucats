@@ -22,13 +22,11 @@ Page({
     // 文件上传相关数据
     avatarUrl: '', // 新上传的头像URL
     originalAvatarUrl: '', // 原始头像URL（用于裁剪）
-    newImageList: [], // 新增的图片列表
-    newVideoList: [], // 新增的视频列表
-    newAudioList: [], // 新增的音频列表
-    newFirstImageUrl: '', // 新选择的首图URL
-    removeFirstImage: false, // 是否删除首图标记
-    removedImageUrls: [], // 被删除的图片URL列表
-    
+    firstImageUrl: '', // 首图URL
+    imageList: [], // 图片列表
+    videoList: [], // 视频列表
+    audioList: [], // 音频列表
+
     // 裁剪器相关数据
     showCropper: false
   },
@@ -38,10 +36,16 @@ Page({
     app.mpServerless.db.collection('ucats').find({
       _id: _id,
     }, {}).then(res => {
+      const cat = res.result[0];
       // console.log(res)
       this.setData({
-        cat: res.result[0],
-        classification: res.result[0].classification,
+        cat: cat,
+        classification: cat.classification,
+        firstImageUrl: cat.firstImageUrl || '',
+        avatarUrl: cat.avatarUrl || '', // 初始化头像URL
+        imageList: (cat.imageUrlList || []).map(url => ({ url })), // 移除isCover字段
+        videoList: (cat.videoUrlList || []).map(url => ({ url })),
+        audioList: (cat.audioUrlList || []).map(url => ({ url, name: '' })),
       });
     }).then(res => {
       var picker_selected = {};
@@ -64,7 +68,7 @@ Page({
   },
 
   // 选择头像
-  chooseAvatar: function() {
+  chooseAvatar: function () {
     const self = this
     wx.chooseImage({
       count: 1,
@@ -72,7 +76,7 @@ Page({
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0];
-        self.setData({ 
+        self.setData({
           originalAvatarUrl: tempFilePath,
           showCropper: true
         });
@@ -84,7 +88,7 @@ Page({
   onCropConfirm(e) {
     console.log('裁剪确认:', e);
     this.setData({ showCropper: false });
-    
+
     const img = e.detail;
     if (!img || !img.path) {
       console.error('裁剪后的图片路径无效');
@@ -94,17 +98,23 @@ Page({
       });
       return;
     }
-    
+
     const croppedImagePath = img.path;
-    
+
     // 压缩图片到50KB并显示在预览框
     console.log('开始压缩头像:', croppedImagePath);
     imageUtil.compressAvatarTo50KB(croppedImagePath)
       .then(compressedPath => {
         console.log('头像压缩成功:', compressedPath);
-        this.setData({ 
+        this.setData({
           avatarUrl: compressedPath
         });
+
+        // 同时更新cat对象中的头像，确保预览显示正确
+        const cat = this.data.cat;
+        cat.avatarUrl = compressedPath;
+        this.setData({ cat: cat });
+
         // 显示压缩成功的提示
         wx.showToast({
           title: '头像处理完成',
@@ -118,20 +128,181 @@ Page({
           icon: 'none'
         });
         // 如果压缩失败，使用原始裁剪图片
-        this.setData({ 
+        this.setData({
           avatarUrl: croppedImagePath
         });
+
+        // 同时更新cat对象中的头像
+        const cat = this.data.cat;
+        cat.avatarUrl = croppedImagePath;
+        this.setData({ cat: cat });
       });
   },
 
   // 关闭裁剪器
   hideCropper() {
     this.setData({ showCropper: false })
+
+    const img = arguments[0].detail;
+
+    if (img && img.path) {
+      const croppedImagePath = img.path;
+      wx.showLoading({
+        title: '处理头像中...',
+        mask: true
+      });
+
+      // 处理成圆形PNG头像并压缩
+      imageUtil.compressAvatarTo50KB(croppedImagePath)
+        .then(compressedPath => {
+          console.log('头像处理成功:', compressedPath);
+          this.setData({
+            avatarUrl: compressedPath
+          });
+          wx.hideLoading();
+          wx.showToast({
+            title: '头像处理完成',
+            icon: 'success'
+          });
+        })
+        .catch(err => {
+          console.error('头像处理失败:', err);
+          wx.hideLoading();
+          wx.showToast({
+            title: '头像处理失败',
+            icon: 'none'
+          });
+          // 处理失败时使用裁剪后的原图
+          this.setData({
+            avatarUrl: croppedImagePath
+          });
+        });
+    }
+  },
+
+  // 选择首图
+  chooseCoverImage: function () {
+    if (this.data.firstImageUrl) {
+      wx.showActionSheet({
+        itemList: ['预览首图', '更换首图', '删除首图'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            // 预览首图
+            wx.previewImage({
+              current: this.data.firstImageUrl,
+              urls: [this.data.firstImageUrl]
+            });
+          } else if (res.tapIndex === 1) {
+            // 更换首图
+            this.chooseNewCoverImage();
+          } else if (res.tapIndex === 2) {
+            // 删除首图
+            this.setData({
+              firstImageUrl: ''
+            });
+            // 同时更新cat对象中的首图
+            const cat = this.data.cat;
+            cat.firstImageUrl = '';
+            this.setData({ cat: cat });
+            wx.showToast({
+              title: '首图已删除',
+              icon: 'success'
+            });
+          }
+        }
+      });
+    } else {
+      this.chooseNewCoverImage();
+    }
+  },
+
+  // 选择新的首图
+  chooseNewCoverImage: function () {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+
+        // 获取图片信息
+        wx.getImageInfo({
+          src: tempFilePath,
+          success: (info) => {
+            console.log('选择的首图信息:', info);
+
+            // 根据图片大小选择合适的压缩目标
+            const fileSize = info.size / 1024; // 转换为KB
+            let targetKB;
+            if (fileSize > 1000) {
+              targetKB = 150;  // 大图压缩到150KB
+            } else if (fileSize > 500) {
+              targetKB = 200;  // 中等图片压缩到200KB
+            } else {
+              targetKB = 250;  // 小图片压缩到250KB
+            }
+
+            // 压缩图片
+            imageUtil.compressToTargetSize(tempFilePath, targetKB)
+              .then(compressedPath => {
+                this.setData({
+                  firstImageUrl: compressedPath
+                });
+                // 同时更新cat对象中的首图，确保预览显示正确
+                const cat = this.data.cat;
+                cat.firstImageUrl = compressedPath;
+                this.setData({ cat: cat });
+                wx.showToast({
+                  title: '首图设置成功',
+                  icon: 'success'
+                });
+              })
+              .catch(err => {
+                console.error('首图压缩失败', err);
+                wx.showToast({
+                  title: '首图处理失败',
+                  icon: 'none'
+                });
+              });
+          },
+          fail: (err) => {
+            console.error('获取首图信息失败', err);
+            wx.showToast({
+              title: '获取图片信息失败',
+              icon: 'none'
+            });
+          }
+        });
+      }
+    });
+  },
+
+  // 删除首图
+  removeCoverImage: function () {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除首图吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            firstImageUrl: ''
+          });
+          // 同时更新cat对象中的首图
+          const cat = this.data.cat;
+          cat.firstImageUrl = '';
+          this.setData({ cat: cat });
+          wx.showToast({
+            title: '首图已删除',
+            icon: 'success'
+          });
+        }
+      }
+    });
   },
 
   // 选择图片
-  chooseImage: function() {
-    const currentCount = (this.data.cat.firstImageUrl ? 1 : 0) + (this.data.cat.imageUrlList ? this.data.cat.imageUrlList.length : 0) + this.data.newImageList.length;
+  chooseImage: function () {
+    const currentCount = this.data.imageList.length;
     if (currentCount >= 5) {
       wx.showToast({
         title: '最多只能上传5张图片',
@@ -139,7 +310,7 @@ Page({
       });
       return;
     }
-    
+
     wx.chooseImage({
       count: 5 - currentCount,
       sizeType: ['compressed'],
@@ -147,7 +318,7 @@ Page({
       success: (res) => {
         const tempFilePaths = res.tempFilePaths;
         const newImages = [];
-        
+
         // 处理每张图片
         tempFilePaths.forEach((filePath, index) => {
           // 先获取图片信息
@@ -156,32 +327,32 @@ Page({
             success: (info) => {
               const fileSize = info.size / 1024; // 转换为KB
               console.log('选择的图片大小:', fileSize, 'KB');
-              
-              // 根据图片大小选择不同的处理策略，统一使用compressToTargetSize函数
-              let targetSize;
+
+              // 根据图片大小选择合适的压缩目标
+              let targetKB;
               if (fileSize > 1000) {
-                // 大图片压缩到150KB
-                targetSize = 150;
+                targetKB = 150;  // 大图压缩到150KB
               } else if (fileSize > 500) {
-                // 中等图片压缩到200KB
-                targetSize = 200;
+                targetKB = 200;  // 中等图片压缩到200KB
               } else {
-                // 小图片压缩到250KB
-                targetSize = 250;
+                targetKB = 250;  // 小图片压缩到250KB
               }
-              
-              // 使用compressToTargetSize函数进行压缩
-              imageUtil.compressToTargetSize(filePath, targetSize)
+
+              // 保持原比例压缩
+              imageUtil.compressToTargetSize(filePath, targetKB)
                 .then(compressedPath => {
                   newImages.push({
-                    url: compressedPath,
-                    isCover: false // 默认不设为首图
+                    url: compressedPath
                   });
-                  
+
                   // 如果所有图片都处理完成，更新数据
                   if (newImages.length === tempFilePaths.length) {
                     this.setData({
-                      newImageList: [...this.data.newImageList, ...newImages]
+                      imageList: [...this.data.imageList, ...newImages]
+                    });
+                    wx.showToast({
+                      title: '图片处理完成',
+                      icon: 'success'
                     });
                   }
                 })
@@ -207,16 +378,15 @@ Page({
   },
 
   // 选择视频
-  chooseVideo: function() {
-    const currentCount = (this.data.cat.videoUrlList ? this.data.cat.videoUrlList.length : 0) + this.data.newVideoList.length;
-    if (currentCount >= 2) {
+  chooseVideo: function () {
+    if (this.data.videoList.length >= 2) {
       wx.showToast({
         title: '最多只能上传2个视频',
         icon: 'none'
       });
       return;
     }
-    
+
     wx.chooseVideo({
       sourceType: ['album', 'camera'],
       compressed: true,
@@ -227,18 +397,19 @@ Page({
         wx.getFileInfo({
           filePath: tempFilePath,
           success: (info) => {
-            const fileSize = info.size / 1024; // 转换为KB
-            if (fileSize > 500) {
+            const fileSizeKB = info.size / 1024; // 转换为KB
+            const limitKB = 1536; // 1.5MB = 1536KB
+            if (fileSizeKB > limitKB) {
               wx.showToast({
-                title: '视频大小不能超过500KB',
+                title: '视频大小不能超过1.5MB',
                 icon: 'none'
               });
               return;
             }
-            
+
             // 添加到视频列表
             this.setData({
-              newVideoList: [...this.data.newVideoList, {
+              videoList: [...this.data.videoList, {
                 url: tempFilePath
               }]
             });
@@ -249,24 +420,23 @@ Page({
   },
 
   // 选择音频
-  chooseAudio: function() {
-    const currentCount = (this.data.cat.audioUrlList ? this.data.cat.audioUrlList.length : 0) + this.data.newAudioList.length;
-    if (currentCount >= 3) {
+  chooseAudio: function () {
+    if (this.data.audioList.length >= 3) {
       wx.showToast({
         title: '最多只能上传3个音频',
         icon: 'none'
       });
       return;
     }
-    
+
     wx.chooseMessageFile({
-      count: 3 - currentCount,
+      count: 3 - this.data.audioList.length,
       type: 'file',
       extension: ['mp3', 'm4a', 'wav'],
       success: (res) => {
         const tempFiles = res.tempFiles;
         const newAudios = [];
-        
+
         tempFiles.forEach((file, index) => {
           // 检查文件大小
           if (file.size / 1024 > 500) { // 500KB限制
@@ -276,16 +446,16 @@ Page({
             });
             return;
           }
-          
+
           newAudios.push({
             url: file.path,
             name: file.name
           });
         });
-        
+
         if (newAudios.length > 0) {
           this.setData({
-            newAudioList: [...this.data.newAudioList, ...newAudios]
+            audioList: [...this.data.audioList, ...newAudios]
           });
         }
       },
@@ -298,230 +468,9 @@ Page({
     });
   },
 
-  // 选择首图
-  chooseCoverImage: function() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0];
-        
-        // 获取图片信息并压缩
-        wx.getFileInfo({
-          filePath: tempFilePath,
-          success: (info) => {
-            const fileSize = info.size / 1024; // 转换为KB
-            
-            // 根据图片大小选择压缩目标
-            let targetKB;
-            if (fileSize > 1000) {
-              targetKB = 150;
-            } else if (fileSize > 500) {
-              targetKB = 200;
-            } else {
-              targetKB = 250;
-            }
-            
-            imageUtil.compressToTargetSize(tempFilePath, targetKB)
-              .then(compressedPath => {
-                // 新首图存储在临时数据中，上传时再更新到数据库
-                this.setData({ 
-                  newFirstImageUrl: compressedPath 
-                });
-                
-                // 立即更新预览显示
-                const cat = this.data.cat;
-                cat.firstImageUrl = compressedPath;
-                this.setData({ cat: cat });
-                
-                wx.showToast({
-                  title: '首图选择成功',
-                  icon: 'success'
-                });
-              })
-              .catch(err => {
-                console.error('图片处理失败', err);
-                wx.showToast({
-                  title: '图片处理失败',
-                  icon: 'none'
-                });
-              });
-          },
-          fail: (err) => {
-            console.error('获取图片信息失败', err);
-            wx.showToast({
-              title: '获取图片信息失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
-    });
-  },
 
-  // 删除首图
-  removeCoverImage: function() {
-    wx.showModal({
-      title: '提示',
-      content: '确定删除首图吗？',
-      success: (res) => {
-        if (res.confirm) {
-          // 标记删除首图
-          this.setData({ 
-            removeFirstImage: true,
-            newFirstImageUrl: '' 
-          });
-          
-          // 立即更新预览显示
-          const cat = this.data.cat;
-          cat.firstImageUrl = '';
-          this.setData({ cat: cat });
-          
-          wx.showToast({
-            title: '首图已删除',
-            icon: 'success'
-          });
-        }
-      }
-    });
-  },
 
-  // 将现有图片设为首图
-  setAsCoverImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const cat = this.data.cat;
-    
-    if (cat.imageUrlList && cat.imageUrlList[index]) {
-      // 将选中的图片设为首图
-      cat.firstImageUrl = cat.imageUrlList[index];
-      // 从图片列表中移除该图片
-      cat.imageUrlList = cat.imageUrlList.filter((_, i) => i !== index);
-      this.setData({ cat: cat });
-      wx.showToast({
-        title: '已设为首图',
-        icon: 'success'
-      });
-    }
-  },
 
-  // 将新上传图片设为首图
-  setNewAsCoverImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const cat = this.data.cat;
-    const newImageList = this.data.newImageList;
-    
-    if (newImageList[index]) {
-      // 将选中的图片设为首图
-      cat.firstImageUrl = newImageList[index].url;
-      // 从新图片列表中移除该图片
-      this.data.newImageList = newImageList.filter((_, i) => i !== index);
-      this.setData({ 
-        cat: cat,
-        newImageList: this.data.newImageList
-      });
-      wx.showToast({
-        title: '已设为首图',
-        icon: 'success'
-      });
-    }
-  },
-
-  // 删除新上传的图片
-  removeNewImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这张新上传的图片吗？',
-      success: (res) => {
-        if (res.confirm) {
-          const newImageList = this.data.newImageList.filter((_, i) => i !== index);
-          this.setData({
-            newImageList: newImageList
-          });
-        }
-      }
-    });
-  },
-
-  // 删除现有图片
-  removeExistingImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这张现有图片吗？删除后需要保存才能生效。',
-      success: (res) => {
-        if (res.confirm) {
-          const cat = this.data.cat;
-          if (cat.imageUrlList && cat.imageUrlList[index]) {
-            // 记录被删除的图片URL
-            const removedImageUrl = cat.imageUrlList[index];
-            const removedImageUrls = [...this.data.removedImageUrls, removedImageUrl];
-            
-            // 从显示列表中移除
-            cat.imageUrlList = cat.imageUrlList.filter((_, i) => i !== index);
-            this.setData({
-              cat: cat,
-              removedImageUrls: removedImageUrls
-            });
-          }
-        }
-      }
-    });
-  },
-
-  // 删除新上传的视频
-  removeNewVideo: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const newVideoList = this.data.newVideoList.filter((_, i) => i !== index);
-    this.setData({
-      newVideoList: newVideoList
-    });
-  },
-
-  // 删除现有视频
-  removeExistingVideo: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const cat = this.data.cat;
-    if (cat.videoUrlList) {
-      cat.videoUrlList = cat.videoUrlList.filter((_, i) => i !== index);
-      this.setData({
-        cat: cat
-      });
-    }
-  },
-
-  // 删除新上传的音频
-  removeNewAudio: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const newAudioList = this.data.newAudioList.filter((_, i) => i !== index);
-    this.setData({
-      newAudioList: newAudioList
-    });
-  },
-
-  // 删除现有音频
-  removeExistingAudio: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const cat = this.data.cat;
-    if (cat.audioUrlList) {
-      cat.audioUrlList = cat.audioUrlList.filter((_, i) => i !== index);
-      this.setData({
-        cat: cat
-      });
-    }
-  },
-
-  // 预览图片
-  previewImage: function(e) {
-    const url = e.currentTarget.dataset.url;
-    wx.previewImage({
-      current: url,
-      urls: [url]
-    });
-  },
 
   // 选择日期
   bindDateChange: function (e) {
@@ -542,6 +491,83 @@ Page({
     console.log(value)
     this.setData({
       ['cat.' + key]: value
+    });
+  },
+
+  // 设置首图
+  setCoverImage: function (e) {
+    const index = e.currentTarget.dataset.index;
+    const imageUrl = this.data.imageList[index].url;
+
+    this.setData({
+      firstImageUrl: imageUrl
+    });
+
+    // 同时更新cat对象中的首图
+    const cat = this.data.cat;
+    cat.firstImageUrl = imageUrl;
+    this.setData({ cat: cat });
+
+    wx.showToast({
+      title: '首图设置成功',
+      icon: 'success'
+    });
+  },
+
+  // 删除图片
+  removeImage: function (e) {
+    const index = e.currentTarget.dataset.index;
+
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这张图片吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const imageList = this.data.imageList.filter((_, i) => i !== index);
+          this.setData({
+            imageList: imageList
+          });
+
+          // 如果删除的是首图，清空首图
+          if (this.data.firstImageUrl === this.data.imageList[index].url) {
+            this.setData({
+              firstImageUrl: ''
+            });
+            // 同时更新cat对象中的首图
+            const cat = this.data.cat;
+            cat.firstImageUrl = '';
+            this.setData({ cat: cat });
+          }
+        }
+      }
+    });
+  },
+
+  // 删除视频
+  removeVideo: function (e) {
+    const index = e.currentTarget.dataset.index;
+    const videoList = this.data.videoList.filter((_, i) => i !== index);
+    this.setData({
+      videoList: videoList
+    });
+  },
+
+  // 删除音频
+  removeAudio: function (e) {
+    const index = e.currentTarget.dataset.index;
+    const audioList = this.data.audioList.filter((_, i) => i !== index);
+    this.setData({
+      audioList: audioList
+    });
+  },
+
+  // 预览图片
+  previewImage: function (e) {
+    const index = e.currentTarget.dataset.index;
+    const urls = this.data.imageList.map(item => item.url);
+    wx.previewImage({
+      current: urls[index],
+      urls: urls
     });
   },
 
@@ -566,204 +592,425 @@ Page({
 
   },
 
-  // 上传新文件到服务器
-  uploadNewFiles: function() {
+  // 上传文件到服务器
+  uploadFiles: function () {
     return new Promise((resolve, reject) => {
       const uploadPromises = [];
       const fileKeys = {};
-      
-      // 上传新头像到腾讯云COS
+
+      // 强制上传头像（确保是腾讯云URL）
       if (this.data.avatarUrl) {
-        uploadPromises.push(
-          this.uploadToTencentCOS(this.data.avatarUrl, 'avatar')
-            .then(url => {
-              fileKeys.avatar = url;
-            })
-        );
+        // 如果是原有头像且没有变化，直接使用
+        if (this.data.avatarUrl === this.data.cat.avatarUrl && !this.data.avatarUrl.includes('http://tmp/') && !this.data.avatarUrl.includes('https://tmp/')) {
+          fileKeys.avatarUrl = this.data.avatarUrl;
+        } else {
+          // 新头像或需要重新上传的头像
+          uploadPromises.push(
+            this.uploadToTencentCOS(this.data.avatarUrl, 'avatar')
+              .then(url => {
+                fileKeys.avatarUrl = url;
+              })
+          );
+        }
       }
-      
-      // 上传新首图到腾讯云COS
-      if (this.data.newFirstImageUrl) {
-        uploadPromises.push(
-          this.uploadToTencentCOS(this.data.newFirstImageUrl, 'firstImage')
-            .then(url => {
-              fileKeys.firstImage = url;
-            })
-        );
+
+      // 强制上传首图（确保是腾讯云URL）
+      if (this.data.firstImageUrl) {
+        // 如果是原有首图且没有变化，直接使用
+        if (this.data.firstImageUrl === this.data.cat.firstImageUrl && !this.data.firstImageUrl.includes('http://tmp/') && !this.data.firstImageUrl.includes('https://tmp/')) {
+          fileKeys.firstImageUrl = this.data.firstImageUrl;
+        } else {
+          // 新首图或需要重新上传的首图
+          uploadPromises.push(
+            this.uploadToTencentCOS(this.data.firstImageUrl, 'firstImage')
+              .then(url => {
+                fileKeys.firstImageUrl = url;
+              })
+          );
+        }
       }
+
+      // 处理图片列表 - 确保所有图片都是腾讯云URL
+      const originalImageUrls = this.data.cat.imageUrlList || [];
+      const currentImageUrls = this.data.imageList.map(image => image.url);
       
-      // 上传新图片到腾讯云COS
-      this.data.newImageList.forEach((image, index) => {
+      // 保留原有的、未被删除的、且不是临时路径的图片
+      const keptImages = currentImageUrls.filter(url => 
+        originalImageUrls.includes(url) && 
+        !url.includes('http://tmp/') && 
+        !url.includes('https://tmp/')
+      );
+      
+      // 上传新增的或需要重新上传的图片
+      const newImages = this.data.imageList.filter(image => {
+        const url = image.url;
+        return !originalImageUrls.includes(url) || url.includes('http://tmp/') || url.includes('https://tmp/');
+      });
+
+      newImages.forEach((image, index) => {
         uploadPromises.push(
           this.uploadToTencentCOS(image.url, `image_${index}`)
             .then(url => {
-              if (!fileKeys.newImages) fileKeys.newImages = [];
-              fileKeys.newImages.push(url);
+              if (!fileKeys.imageUrlList) fileKeys.imageUrlList = [];
+              fileKeys.imageUrlList.push(url);
             })
         );
       });
+
+      // 处理视频列表 - 确保所有视频都是腾讯云URL
+      const originalVideoUrls = this.data.cat.videoUrlList || [];
+      const currentVideoUrls = this.data.videoList.map(video => video.url);
       
-      // 上传新视频到腾讯云COS
-      this.data.newVideoList.forEach((video, index) => {
+      // 保留原有的、未被删除的、且不是临时路径的视频
+      const keptVideos = currentVideoUrls.filter(url => 
+        originalVideoUrls.includes(url) && 
+        !url.includes('http://tmp/') && 
+        !url.includes('https://tmp/')
+      );
+      
+      // 上传新增的或需要重新上传的视频
+      const newVideos = this.data.videoList.filter(video => {
+        const url = video.url;
+        return !originalVideoUrls.includes(url) || url.includes('http://tmp/') || url.includes('https://tmp/');
+      });
+
+      newVideos.forEach((video, index) => {
         uploadPromises.push(
           this.uploadToTencentCOS(video.url, `video_${index}`)
             .then(url => {
-              if (!fileKeys.newVideos) fileKeys.newVideos = [];
-              fileKeys.newVideos.push(url);
+              if (!fileKeys.videoUrlList) fileKeys.videoUrlList = [];
+              fileKeys.videoUrlList.push(url);
             })
         );
       });
+
+      // 处理音频列表 - 确保所有音频都是腾讯云URL
+      const originalAudioUrls = this.data.cat.audioUrlList || [];
+      const currentAudioUrls = this.data.audioList.map(audio => audio.url);
       
-      // 上传新音频到腾讯云COS
-      this.data.newAudioList.forEach((audio, index) => {
+      // 保留原有的、未被删除的、且不是临时路径的音频
+      const keptAudios = currentAudioUrls.filter(url => 
+        originalAudioUrls.includes(url) && 
+        !url.includes('http://tmp/') && 
+        !url.includes('https://tmp/')
+      );
+      
+      // 上传新增的或需要重新上传的音频
+      const newAudios = this.data.audioList.filter(audio => {
+        const url = audio.url;
+        return !originalAudioUrls.includes(url) || url.includes('http://tmp/') || url.includes('https://tmp/');
+      });
+
+      newAudios.forEach((audio, index) => {
         uploadPromises.push(
           this.uploadToTencentCOS(audio.url, `audio_${index}`)
             .then(url => {
-              if (!fileKeys.newAudios) fileKeys.newAudios = [];
-              fileKeys.newAudios.push(url);
+              if (!fileKeys.audioUrlList) fileKeys.audioUrlList = [];
+              fileKeys.audioUrlList.push(url);
             })
         );
       });
-      
+
       // 等待所有文件上传完成
       Promise.all(uploadPromises)
-        .then(() => resolve(fileKeys))
+        .then(() => {
+          // 构建最终的文件列表（只包含网络URL，不包含临时路径）
+          const finalFiles = {};
+
+          // 头像：确保是腾讯云URL
+          finalFiles.avatarUrl = fileKeys.avatarUrl || '';
+
+          // 首图：确保是腾讯云URL
+          finalFiles.firstImageUrl = fileKeys.firstImageUrl || '';
+
+          // 图片列表：保留的图片 + 新上传的图片URL
+          finalFiles.imageUrlList = [
+            ...keptImages,
+            ...(fileKeys.imageUrlList || [])
+          ];
+
+          // 视频列表：保留的视频 + 新上传的视频URL
+          finalFiles.videoUrlList = [
+            ...keptVideos,
+            ...(fileKeys.videoUrlList || [])
+          ];
+
+          // 音频列表：保留的音频 + 新上传的音频URL
+          finalFiles.audioUrlList = [
+            ...keptAudios,
+            ...(fileKeys.audioUrlList || [])
+          ];
+
+          console.log('最终文件列表:', finalFiles);
+          resolve(finalFiles);
+        })
         .catch(reject);
     });
   },
 
-  // 上传文件到阿里云OSS
-  uploadToTencentCOS: function(filePath, fileName) {
+  // 上传文件到腾讯云
+  uploadToTencentCOS: function (filePath, fileName) {
+
+    // 使用腾讯云 COS 客户端上传（选项 A：客户端使用后端签名）
     return new Promise((resolve, reject) => {
-      // 使用阿里云MPServerless的文件上传功能
+      const cosImagePath = app.globalData.cosImagePath;
       const fileExtension = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
-      const newFileName = `${fileName}_${Date.now()}${fileExtension}`;
-      
-      app.mpServerless.file.uploadFile({
-        filePath: filePath,
-        fileName: newFileName,
-        extension: fileExtension
-      }).then(res => {
-        // 上传成功后，返回文件访问URL
-        resolve(res.fileUrl);
-      }).catch(err => {
-        console.error('上传文件失败', err);
-        reject(err);
+      const newFileName = `${cosImagePath}/${fileName}_${Date.now()}${fileExtension}`;
+
+      // 读取需要的 config（请在 app.globalData 中配置 cosBucket, cosRegion, cosSignUrl）
+      const cosBucket = app.globalData.cosBucket;
+      const cosRegion = app.globalData.cosRegion;
+
+      // 引入 cos-wx-sdk-v5（请确保已将 SDK 放到 miniprogram_npm 或 utils 中）
+      let COS;
+      try {
+        COS = require('../../utils/cos-wx-sdk-v5.js');
+      } catch (e) {
+        console.error('无法加载 cos-wx-sdk-v5，请先安装 SDK 或把其放入 miniprogram_npm 目录', e);
+        reject(e);
+        return;
+      }
+
+      const cos = new COS({
+        SecretId: app.globalData.cosSecretId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
+        SecretKey: app.globalData.cosSecretKey, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
       });
+      // 开始上传
+      cos.uploadFile({
+        Bucket: cosBucket,
+        Region: cosRegion,
+        Key: newFileName,
+        FilePath: filePath,
+        onProgress: function (info) {
+          // 可选：可以在这里上报进度
+          console.log('upload progress', info);
+        }
+      },
+        function (err, data) {
+          if (err) {
+            console.error('上传失败:', err);
+            reject(err);
+            return;
+          } else {
+            console.log('上传成功返回结果:', data); // 打印完整返回结果
+            const fileUrl = `https://${cosBucket}.cos.${cosRegion}.myqcloud.com/${newFileName}`;
+            console.log('生成的URL:', fileUrl); // 打印生成的URL
+            resolve(fileUrl);
+          }
+        });
     });
   },
 
+  // 检查是否包含临时路径（仅在调试时使用）
+  hasTemporaryPath: function() {
+    const checkPath = (path) => {
+      return path && (path.includes('http://tmp/') || path.includes('https://tmp/'));
+    };
+
+    // 检查头像
+    if (checkPath(this.data.avatarUrl)) {
+      return true;
+    }
+
+    // 检查首图
+    if (checkPath(this.data.firstImageUrl)) {
+      return true;
+    }
+
+    // 检查图片列表
+    for (let i = 0; i < this.data.imageList.length; i++) {
+      if (checkPath(this.data.imageList[i].url)) {
+        return true;
+      }
+    }
+
+    // 检查视频列表
+    for (let i = 0; i < this.data.videoList.length; i++) {
+      if (checkPath(this.data.videoList[i].url)) {
+        return true;
+      }
+    }
+
+    // 检查音频列表
+    for (let i = 0; i < this.data.audioList.length; i++) {
+      if (checkPath(this.data.audioList[i].url)) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
   upload() {
+    // 第一步：校验必填项信息
+    const name = (this.data.cat && this.data.cat.name) ? this.data.cat.name.trim() : '';
+    const avatar = this.data.avatarUrl || this.data.cat.avatarUrl;
+    const firstImage = this.data.firstImageUrl || this.data.cat.firstImageUrl;
+
+    if (!name) {
+      wx.showToast({ title: '请填写猫咪名称', icon: 'none' });
+      return;
+    }
+    if (!avatar) {
+      wx.showToast({ title: '请上传头像', icon: 'none' });
+      return;
+    }
+    if (!firstImage) {
+      wx.showToast({ title: '请上传首图', icon: 'none' });
+      return;
+    }
+
     wx.showModal({
       title: '提示',
       content: '确定提交吗？',
       success: (res) => {
         if (res.confirm) {
           wx.showLoading({
-            title: '更新中...',
+            title: '上传文件中...',
           });
-          
-          // 先上传新文件
-          this.uploadNewFiles()
+
+          // 第二步：上传多媒体文件到腾讯云
+          this.uploadFiles()
             .then(fileKeys => {
-              // 处理首图和图片列表
-              let firstImageUrl = '';
-              let imageUrls = [...(this.data.cat.imageUrlList || [])];
-              const videoUrls = [...(this.data.cat.videoUrlList || [])];
-              const audioUrls = [...(this.data.cat.audioUrlList || [])];
-              
-              // 处理首图：优先使用新上传的，否则检查是否删除了原首图
-              if (fileKeys.firstImage) {
-                firstImageUrl = fileKeys.firstImage;
-              } else if (!this.data.removeFirstImage && this.data.cat.firstImageUrl) {
-                firstImageUrl = this.data.cat.firstImageUrl;
+              console.log('文件上传完成:', fileKeys);
+
+              // 第三步：验证上传结果，确保没有临时路径
+              const validateResult = this.validateUploadResult(fileKeys);
+              if (!validateResult.valid) {
+                throw new Error(validateResult.error);
               }
-              
-              // 移除被删除的图片
-              if (this.data.removedImageUrls.length > 0) {
-                imageUrls = imageUrls.filter(url => !this.data.removedImageUrls.includes(url));
-              }
-              
-              // 处理新上传的图片
-              if (fileKeys.newImages && fileKeys.newImages.length > 0) {
-                imageUrls.push(...fileKeys.newImages);
-              }
-              
-              // 添加新上传的视频和音频
-              if (fileKeys.newVideos) {
-                videoUrls.push(...fileKeys.newVideos);
-              }
-              if (fileKeys.newAudios) {
-                audioUrls.push(...fileKeys.newAudios);
-              }
-              
-              // 更新猫咪信息
+
+              wx.showLoading({
+                title: '更新数据库中...',
+              });
+
+              // 第四步：将相关信息上传至阿里云数据库
+              const updateData = {
+                addPhotoNumber: fileKeys.imageUrlList.length + (fileKeys.firstImageUrl ? 1 : 0),
+                movieNums: fileKeys.videoUrlList.length,
+                audioNumber: fileKeys.audioUrlList.length,
+                isAdoption: this.data.cat.isAdoption || '',
+                nickName: this.data.cat.nickName || '',
+                furColor: this.data.cat.furColor || '',
+                classification: this.data.cat.classification || '',
+                gender: this.data.cat.gender || '',
+                status: this.data.cat.status || '',
+                isSterilization: this.data.cat.isSterilization || '',
+                sterilizationTime: this.data.cat.sterilizationTime || '',
+                character: this.data.cat.character || '',
+                firstSightingTime: this.data.cat.firstSightingTime || '',
+                firstSightingLocation: this.data.cat.firstSightingLocation || '',
+                appearance: this.data.cat.appearance || '',
+                missingTime: this.data.cat.missingTime || '',
+                relationship: this.data.cat.relationship || '',
+                deliveryTime: this.data.cat.deliveryTime || '',
+                deathTime: this.data.cat.deathTime || '',
+                moreInformation: this.data.cat.moreInformation || '',
+                notes: this.data.cat.notes || '',
+                deathReason: this.data.cat.deathReason || '',
+                location: this.data.cat.location || '',
+                birthTime: this.data.cat.birthTime || '',
+                relatedCats: this.data.cat.relatedCats || '',
+                lastEditTime: new Date(),
+                lastEditAdministrator: app.globalData.Administrator || '',
+                // 更新文件链接（腾讯云COS的URL）
+                avatarUrl: fileKeys.avatarUrl || '',
+                firstImageUrl: fileKeys.firstImageUrl || '',
+                imageUrlList: fileKeys.imageUrlList || [],
+                videoUrlList: fileKeys.videoUrlList || [],
+                audioUrlList: fileKeys.audioUrlList || [],
+                // 保持软删除标记
+                isDeleted: this.data.cat.isDeleted !== undefined ? this.data.cat.isDeleted : false
+              };
+
+              console.log('更新数据:', updateData);
+
               return app.mpServerless.db.collection('ucats').updateMany({
                 _id: this.data.cat._id
               }, {
-                $set: {
-                  addPhotoNumber: imageUrls.length + (firstImageUrl ? 1 : 0),
-                  audioNumber: audioUrls.length,
-                  movieNums: videoUrls.length,
-                  isAdoption: this.data.cat.isAdoption,
-                  nickName: this.data.cat.nickName,
-                  furColor: this.data.cat.furColor,
-                  classification: this.data.cat.classification,
-                  gender: this.data.cat.gender,
-                  status: this.data.cat.status,
-                  isSterilization: this.data.cat.isSterilization,
-                  sterilizationTime: this.data.cat.sterilizationTime,
-                  character: this.data.cat.character,
-                  firstSightingTime: this.data.cat.firstSightingTime,
-                  firstSightingLocation: this.data.cat.firstSightingLocation,
-                  appearance: this.data.cat.appearance,
-                  missingTime: this.data.cat.missingTime,
-                  relationship: this.data.cat.relationship,
-                  deliveryTime: this.data.cat.deliveryTime,
-                  deathTime: this.data.cat.deathTime,
-                  moreInformation: this.data.cat.moreInformation,
-                  notes: this.data.cat.notes,
-                  deathReason: this.data.cat.deathReason,
-                  location: this.data.cat.location,
-                  birthTime: this.data.cat.birthTime,
-                  relatedCats: this.data.cat.relatedCats,
-                  lastEditTime: Date(),
-                  lastEditAdministrator: app.globalData.Administrator,
-                  // 更新文件链接（腾讯云COS的URL）
-                  avatarUrl: fileKeys.avatar || this.data.cat.avatarUrl || '',
-                  firstImageUrl: firstImageUrl,
-                  imageUrlList: imageUrls,
-                  videoUrlList: videoUrls,
-                  audioUrlList: audioUrls,
-                  // 保持软删除标记
-                  isDeleted: this.data.cat.isDeleted !== undefined ? this.data.cat.isDeleted : false
-                }
+                $set: updateData
               });
             })
             .then(res => {
+              console.log('数据库更新结果:', res);
               wx.hideLoading();
               wx.showToast({
                 icon: 'success',
                 title: '操作成功',
               });
-              // 返回上一页
+              // 返回上一页并刷新
               setTimeout(() => {
+                const pages = getCurrentPages();
+                if (pages.length > 1) {
+                  const prevPage = pages[pages.length - 2];
+                  // 如果上一页是详情页，触发刷新
+                  if (prevPage && prevPage.route && (prevPage.route.includes('catDetail') || prevPage.route.includes('detail'))) {
+                    prevPage.onLoad && prevPage.onLoad({ _id: _id });
+                  }
+                }
                 wx.navigateBack();
               }, 1500);
             })
             .catch(err => {
               wx.hideLoading();
-              console.error(err);
-              wx.showToast({
-                icon: 'error',
-                title: '操作失败',
-              });
+              console.error('操作失败:', err);
+              // 第五步：如果此时图片路径中包含临时路径，提示用户重试
+              if (err.message && err.message.includes('临时路径')) {
+                wx.showModal({
+                  title: '上传失败',
+                  content: err.message + '请检查文件后重试。',
+                  showCancel: false
+                });
+              } else {
+                wx.showToast({
+                  icon: 'error',
+                  title: err.message || '操作失败，请重试',
+                });
+              }
             });
         } else if (res.cancel) {
           console.log('用户点击取消')
         }
       }
     })
+  },
+
+  // 验证上传结果
+  validateUploadResult: function(fileKeys) {
+    const checkPath = (path, name) => {
+      if (path && (path.includes('http://tmp/') || path.includes('https://tmp/'))) {
+        return { valid: false, error: `${name}仍包含临时路径，请重新处理` };
+      }
+      return { valid: true };
+    };
+
+    // 检查头像
+    let result = checkPath(fileKeys.avatarUrl, '头像');
+    if (!result.valid) return result;
+
+    // 检查首图
+    result = checkPath(fileKeys.firstImageUrl, '首图');
+    if (!result.valid) return result;
+
+    // 检查图片列表
+    for (let i = 0; i < (fileKeys.imageUrlList || []).length; i++) {
+      result = checkPath(fileKeys.imageUrlList[i], `第${i + 1}张图片`);
+      if (!result.valid) return result;
+    }
+
+    // 检查视频列表
+    for (let i = 0; i < (fileKeys.videoUrlList || []).length; i++) {
+      result = checkPath(fileKeys.videoUrlList[i], `第${i + 1}个视频`);
+      if (!result.valid) return result;
+    }
+
+    // 检查音频列表
+    for (let i = 0; i < (fileKeys.audioUrlList || []).length; i++) {
+      result = checkPath(fileKeys.audioUrlList[i], `第${i + 1}个音频`);
+      if (!result.valid) return result;
+    }
+
+    return { valid: true };
   },
 
   delete() {
