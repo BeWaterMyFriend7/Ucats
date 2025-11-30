@@ -9,9 +9,11 @@
 
 <img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" />
 
-<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 33%;" />
+<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 23%;" />
 
-<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
+<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:23%;" />
+
+<img src="README/image-20251130181648126.png" alt="image-20251130181648126" style="zoom:23%;" />
 
 此小程序基于北大猫协源码开发，致敬原开发者Circle
 
