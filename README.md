@@ -13,8 +13,6 @@
 
 <img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
 
-<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
-
 此小程序基于北大猫协源码开发，致敬原开发者Circle
 
 使用说明见 https://gitee.com/circlelq/yan-yuan-mao-su-cha-shou-ce/wikis/Home
