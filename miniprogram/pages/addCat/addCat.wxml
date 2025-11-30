@@ -274,9 +274,9 @@
     <input data-key='relationship' bindinput="inputText" class="edit-input" value="{{cat.relationship}}" />
 
     <view class="head1">
-      <text user-select="true">相关的猫，用一个空格隔开</text>
+      <text user-select="true">相关的猫</text>
     </view>
-    <input data-key='relatedCats' bindinput="inputText" class="edit-input" value="{{cat.relatedCats}}" />
+    <cat-selector selected-cats="{{relatedCatsList}}" bind:catselected="onCatSelected"></cat-selector>
   </view>
 
 <text> \n </text>

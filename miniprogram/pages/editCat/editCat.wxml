@@ -94,7 +94,7 @@
     
     <view class="cover-upload-section">
       <view wx:if="{{cat.firstImageUrl}}" class="cover-image-container">
-        <image class="cover-image" src="{{cat.firstImageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{cat.firstImageUrl}}"></image>
+        <image class="cover-image" src="{{cat.firstImageUrl}}" mode="aspectFill" bindtap="previewCoverImage"></image>
         <view class="cover-actions">
           <view class="change-cover-btn" bindtap="chooseCoverImage">更换首图</view>
           <view class="remove-cover-btn" bindtap="removeCoverImage">删除首图</view>
@@ -275,9 +275,9 @@
     <input data-key='relationship' bindinput="inputText" class="edit-input" value="{{cat.relationship}}" />
 
     <view class="head1">
-      <text user-select="true">相关的猫，用一个空格隔开</text>
+      <text user-select="true">相关的猫</text>
     </view>
-    <input data-key='relatedCats' bindinput="inputText" class="edit-input" value="{{cat.relatedCats}}" />
+    <cat-selector selected-cats="{{relatedCatsList}}" bind:catselected="onCatSelected"></cat-selector>
 
     <view class="head1">
       <text user-select="true">最后编辑者</text>
@@ -290,7 +290,7 @@
       <text user-select="true">最后编辑时间</text>
     </view>
     <view class="body">
-      <text user-select="true">{{cat.lastEditTime}}</text>
+      <text user-select="true">{{cat.lastEditTime || '暂无'}}</text>
     </view>
   </view>
 

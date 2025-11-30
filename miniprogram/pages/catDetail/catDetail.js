@@ -50,20 +50,41 @@ Page({
       }
       // 处理相关猫咪数据
       if (this.data.cat.relatedCats) {
-        var relatedCats = this.data.cat.relatedCats.split(" ")
-        for (var i = 0; i < relatedCats.length; ++i) {
-          app.mpServerless.db.collection('ucats').find({
-            name: relatedCats[i],
-            isDeleted: { $ne: true } // 不显示已软删除的数据
-          }, {}).then(res => {
+        let relatedIds = [];
+        
+        if (typeof this.data.cat.relatedCats === 'string') {
+          // 老格式：根据名称查找猫咪（兼容老数据）
+          const catNames = this.data.cat.relatedCats.split(" ").filter(name => name.trim());
+          const promises = catNames.map(name => 
+            app.mpServerless.db.collection('ucats').find({
+              name: name.trim(),
+              isDeleted: { $ne: true }
+            }).then(res => res.result)
+          );
+          
+          Promise.all(promises).then(results => {
+            const allCats = results.flat();
             this.setData({
-              relatedCatsId: this.data.relatedCatsId.concat(res.result),
+              relatedCatsId: allCats,
             });
-          })
+          });
+        } else if (Array.isArray(this.data.cat.relatedCats)) {
+          // 新格式：根据ID查找猫咪
+          relatedIds = this.data.cat.relatedCats;
+          const promises = relatedIds.map(id => 
+            app.mpServerless.db.collection('ucats').find({
+              _id: id,
+              isDeleted: { $ne: true }
+            }).then(res => res.result.length > 0 ? res.result[0] : null)
+          );
+          
+          Promise.all(promises).then(results => {
+            const validCats = results.filter(cat => cat !== null);
+            this.setData({
+              relatedCatsId: validCats,
+            });
+          });
         }
-        this.setData({
-          relatedCats: relatedCats,
-        });
       }
     });
   },

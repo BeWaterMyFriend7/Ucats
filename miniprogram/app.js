@@ -9,7 +9,7 @@ const mpServerless = new MPServerless({
 }, {
   appId: 'wxf6b3f064105b1e8b', // 小程序应用标识
   spaceId: 'mp-3a965197-01b8-4b19-91f6-1547e89e0a71', // 服务空间标识
-  clientSecret: '<Key>', // 服务空间 secret key
+  clientSecret: '<KEY>', // 服务空间 secret key
   endpoint: 'https://api.next.bspapp.com', // 服务空间地址，从小程序 serverless 控制台处获得
 });
 
@@ -66,8 +66,8 @@ App({
     cosSignUrl: "https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/",
     cosImagePath: "Ucats_pic",
     usePermanentKey : true,
-    cosSecretId : '<KEY>',
-    cosSecretKey : '<KEY>',
+    cosSecretId : '<your-cos-secret-id>',
+    cosSecretKey : '<your-cos-secret-key>',
   },
   mpServerless
 })

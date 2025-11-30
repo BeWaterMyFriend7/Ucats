@@ -1,6 +1,7 @@
 var _id = "1";
 const app = getApp();
 const imageUtil = require('../../utils/imageUtil.js');
+const util = require('../../utils/util.js');
 
 Page({
   data: {
@@ -28,7 +29,9 @@ Page({
     audioList: [], // 音频列表
 
     // 裁剪器相关数据
-    showCropper: false
+    showCropper: false,
+    // 猫咪关系相关数据
+    relatedCatsList: []
   },
 
   onLoad: function (options) {
@@ -37,6 +40,20 @@ Page({
       _id: _id,
     }, {}).then(res => {
       const cat = res.result[0];
+      // 格式化最后编辑时间
+      if (cat.lastEditTime) {
+        try {
+          // 如果是字符串，尝试转换为Date对象
+          const editTime = typeof cat.lastEditTime === 'string' ? new Date(cat.lastEditTime) : cat.lastEditTime;
+          if (!isNaN(editTime.getTime())) {
+            cat.lastEditTime = util.formatTime(editTime);
+          }
+        } catch (e) {
+          console.error('时间格式化失败:', e);
+          // 如果格式化失败，保持原值
+        }
+      }
+      
       // console.log(res)
       this.setData({
         cat: cat,
@@ -46,6 +63,7 @@ Page({
         imageList: (cat.imageUrlList || []).map(url => ({ url })), // 移除isCover字段
         videoList: (cat.videoUrlList || []).map(url => ({ url })),
         audioList: (cat.audioUrlList || []).map(url => ({ url, name: '' })),
+        relatedCatsList: [],
       });
     }).then(res => {
       var picker_selected = {};
@@ -64,6 +82,9 @@ Page({
       this.setData({
         picker_selected: picker_selected,
       });
+      
+      // 加载相关猫咪数据
+      this.loadRelatedCats();
     })
   },
 
@@ -182,38 +203,8 @@ Page({
 
   // 选择首图
   chooseCoverImage: function () {
-    if (this.data.firstImageUrl) {
-      wx.showActionSheet({
-        itemList: ['预览首图', '更换首图', '删除首图'],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            // 预览首图
-            wx.previewImage({
-              current: this.data.firstImageUrl,
-              urls: [this.data.firstImageUrl]
-            });
-          } else if (res.tapIndex === 1) {
-            // 更换首图
-            this.chooseNewCoverImage();
-          } else if (res.tapIndex === 2) {
-            // 删除首图
-            this.setData({
-              firstImageUrl: ''
-            });
-            // 同时更新cat对象中的首图
-            const cat = this.data.cat;
-            cat.firstImageUrl = '';
-            this.setData({ cat: cat });
-            wx.showToast({
-              title: '首图已删除',
-              icon: 'success'
-            });
-          }
-        }
-      });
-    } else {
-      this.chooseNewCoverImage();
-    }
+    // 直接进入选择图片界面，不需要二次选择
+    this.chooseNewCoverImage();
   },
 
   // 选择新的首图
@@ -494,6 +485,68 @@ Page({
     });
   },
 
+  // 加载相关猫咪
+  loadRelatedCats: function() {
+    const cat = this.data.cat;
+    if (!cat.relatedCats) {
+      return;
+    }
+
+    // 兼容老格式（空格分隔的名称）和新格式（ID数组）
+    let relatedIds = [];
+    if (typeof cat.relatedCats === 'string') {
+      // 老格式：根据名称查找ID
+      const catNames = cat.relatedCats.split(' ').filter(name => name.trim());
+      const promises = catNames.map(name => 
+        app.mpServerless.db.collection('ucats')
+          .find({ 
+            name: name.trim(),
+            isDeleted: { $ne: true }
+          })
+          .then(res => res.result.length > 0 ? res.result[0]._id : null)
+      );
+      
+      Promise.all(promises).then(ids => {
+        const validIds = ids.filter(id => id !== null);
+        // 根据ID加载完整的猫咪对象
+        if (validIds.length > 0) {
+          app.mpServerless.db.collection('ucats')
+            .find({ _id: { $in: validIds } })
+            .then(res => {
+              this.setData({ relatedCatsList: res.result || [] });
+            });
+        } else {
+          this.setData({ relatedCatsList: [] });
+        }
+      });
+    } else if (Array.isArray(cat.relatedCats)) {
+      // 新格式：根据ID数组加载完整的猫咪对象
+      relatedIds = cat.relatedCats;
+      if (relatedIds.length > 0) {
+        app.mpServerless.db.collection('ucats')
+          .find({ _id: { $in: relatedIds } })
+          .then(res => {
+            this.setData({ relatedCatsList: res.result || [] });
+          });
+      } else {
+        this.setData({ relatedCatsList: [] });
+      }
+    }
+  },
+
+  // 处理猫咪选择
+  onCatSelected: function(e) {
+    console.log('editCat onCatSelected called with:', e.detail);
+    const selectedCats = e.detail.cats;
+    const catIds = selectedCats.map(cat => cat._id);
+    console.log('setting relatedCatsList to:', selectedCats);
+    console.log('setting cat.relatedCats to:', catIds);
+    this.setData({ 
+      relatedCatsList: selectedCats, // 存储完整的猫咪对象用于回显
+      ['cat.relatedCats']: catIds     // 存储ID用于提交
+    });
+  },
+
   // 设置首图
   setCoverImage: function (e) {
     const index = e.currentTarget.dataset.index;
@@ -569,6 +622,16 @@ Page({
       current: urls[index],
       urls: urls
     });
+  },
+
+  // 预览首图
+  previewCoverImage: function () {
+    if (this.data.cat.firstImageUrl) {
+      wx.previewImage({
+        current: this.data.cat.firstImageUrl,
+        urls: [this.data.cat.firstImageUrl]
+      });
+    }
   },
 
   // 删除已经选择的日期
@@ -649,7 +712,7 @@ Page({
 
       newImages.forEach((image, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(image.url, `image_${index}`)
+          this.uploadToTencentCOS(image.url, 'image')
             .then(url => {
               if (!fileKeys.imageUrlList) fileKeys.imageUrlList = [];
               fileKeys.imageUrlList.push(url);
@@ -676,7 +739,7 @@ Page({
 
       newVideos.forEach((video, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(video.url, `video_${index}`)
+          this.uploadToTencentCOS(video.url, 'video')
             .then(url => {
               if (!fileKeys.videoUrlList) fileKeys.videoUrlList = [];
               fileKeys.videoUrlList.push(url);
@@ -703,7 +766,7 @@ Page({
 
       newAudios.forEach((audio, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(audio.url, `audio_${index}`)
+          this.uploadToTencentCOS(audio.url, 'audio')
             .then(url => {
               if (!fileKeys.audioUrlList) fileKeys.audioUrlList = [];
               fileKeys.audioUrlList.push(url);
@@ -749,13 +812,21 @@ Page({
   },
 
   // 上传文件到腾讯云
-  uploadToTencentCOS: function (filePath, fileName) {
+  uploadToTencentCOS: function (filePath, fileType) {
 
     // 使用腾讯云 COS 客户端上传（选项 A：客户端使用后端签名）
     return new Promise((resolve, reject) => {
       const cosImagePath = app.globalData.cosImagePath;
       const fileExtension = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
-      const newFileName = `${cosImagePath}/${fileName}_${Date.now()}${fileExtension}`;
+      
+      // 获取猫咪名称，如果没有则使用默认名称
+      const catName = (this.data.cat && this.data.cat.name) ? this.data.cat.name.trim() : 'unknown_cat';
+      
+      // 生成随机码
+      const randomCode = Math.random().toString(36).substring(2, 8);
+      
+      // 使用新的命名格式：猫咪名称_<类型>_<随机码>
+      const newFileName = `${cosImagePath}/${catName}_${fileType}_${randomCode}${fileExtension}`;
 
       // 读取需要的 config（请在 app.globalData 中配置 cosBucket, cosRegion, cosSignUrl）
       const cosBucket = app.globalData.cosBucket;
@@ -1027,7 +1098,7 @@ Page({
           }, {
             $set: {
               isDeleted: true,
-              lastEditTime: Date(),
+              lastEditTime: new Date(),
               lastEditAdministrator: app.globalData.Administrator
             }
           }).then(res => {

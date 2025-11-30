@@ -2,7 +2,6 @@
   "pages": [ 
     "pages/index/index",
     "pages/about/about",
-    "pages/relation/relation",
     "pages/search/search",
     "pages/catDetail/catDetail",
     "pages/editCat/editCat",
@@ -25,10 +24,6 @@
       {
         "text": "查猫",
         "pagePath": "pages/index/index"
-      },
-      {
-        "text": "猫猫关系",
-        "pagePath": "pages/relation/relation"
       },
       {
         "text": "关于",

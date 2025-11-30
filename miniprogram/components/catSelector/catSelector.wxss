@@ -1,0 +1,242 @@
+.cat-selector-container {
+  width: 100%;
+}
+
+/* 已选择的猫咪样式 - 每行6个 */
+.selected-cats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin: 10rpx 0;
+  justify-content: flex-start;
+}
+
+.selected-cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 95rpx;
+  padding: 2rpx;
+  flex-shrink: 0;
+}
+
+.selected-cat-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+  margin-bottom: 5rpx;
+  border: 2rpx solid #fff;
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.selected-cat-name {
+  font-size: 20rpx;
+  color: #333;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-cat-btn {
+  position: absolute;
+  right: 2rpx;
+  top: 2rpx;
+  width: 20rpx;
+  height: 20rpx;
+  background-color: #ff4757;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14rpx;
+  line-height: 1;
+  z-index: 1;
+}
+
+/* 添加猫咪按钮 */
+.add-cat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 95rpx;
+  height: 75rpx;
+  padding: 2rpx;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.add-icon {
+  font-size: 32rpx;
+  color: #999;
+  line-height: 1;
+}
+
+/* 选择弹窗样式 */
+.selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.selector-content {
+  background-color: white;
+  border-radius: 12rpx;
+  width: 85%;
+  max-width: 600rpx;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.selector-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.close-btn {
+  font-size: 40rpx;
+  color: #999;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 搜索框样式 */
+.search-container {
+  padding: 15rpx 20rpx;
+  border-bottom: 1rpx solid #eee;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  height: 60rpx;
+  background-color: #f8f8f8;
+  border-radius: 30rpx;
+  padding: 0 25rpx;
+  font-size: 26rpx;
+  box-sizing: border-box;
+}
+
+/* 猫咪列表样式 */
+.cat-list-container {
+  flex: 1;
+  max-height: 50vh;
+  min-height: 300rpx;
+  padding: 0 15rpx;
+}
+
+.loading-text, .empty-text {
+  text-align: center;
+  padding: 40rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.cat-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+  transition: background-color 0.2s;
+}
+
+.cat-item.selected {
+  background-color: #e8f5e8;
+}
+
+.cat-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.cat-info {
+  flex: 1;
+}
+
+.cat-name {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
+}
+
+.cat-desc {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-top: 5rpx;
+}
+
+.check-icon {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background-color: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon.checked {
+  background-color: #07c160;
+}
+
+.check-mark {
+  color: white;
+  font-size: 24rpx;
+}
+
+/* 底部按钮样式 */
+.selector-footer {
+  display: flex;
+  border-top: 1rpx solid #eee;
+  padding: 20rpx;
+  flex-shrink: 0;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin: 0 10rpx;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background-color: #07c160;
+  color: white;
+}

@@ -178,16 +178,17 @@
   </view>
 </view>
 
-<view wx:if="{{relatedCatsId}}" class="itemname1">
-  <navigator style='margin-right:20rpx;' wx:for="{{relatedCatsId}}" wx:key="_id" url="/pages/catDetail/catDetail?_id={{relatedCatsId[index]._id}}">
-    <view style='flex-shrink:0; box-sizing:border-box; width:90rpx;'>
-      <!-- 使用数据库中存储的图片URL -->
-      <image wx:if="{{relatedCatsId[index].avatarUrl}}" style="margin-top: 10rpx; width:90rpx;height:90rpx;" src="{{relatedCatsId[index].avatarUrl}}"></image>
-      <!-- 如果没有头像URL，则使用默认方式 -->
-      <image wx:else style="margin-top: 10rpx; width:90rpx;height:90rpx;" src="{{url}}{{relatedCatsId[index].name}}.png"></image>
-      <view style="text-align: center; margin-bottom: 40rpx; color:#353535;"> \n {{relatedCatsId[index].name}} </view>
-    </view>
-  </navigator>
+<view wx:if="{{relatedCatsId.length > 0}}" class="related-cats-section">
+  <view class="section-title">相关猫咪</view>
+  <view class="related-cats-container">
+    <navigator wx:for="{{relatedCatsId}}" wx:key="_id" class="related-cat-item" url="/pages/catDetail/catDetail?_id={{item._id}}">
+      <view class="related-cat-avatar-container">
+        <image wx:if="{{item.avatarUrl}}" class="related-cat-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+        <image wx:else class="related-cat-avatar" src="{{url}}{{item.name}}.png" mode="aspectFill"></image>
+      </view>
+      <text class="related-cat-name">{{item.name}}</text>
+    </navigator>
+  </view>
 </view>
 
 <text> \n </text>

@@ -35,10 +35,22 @@ Page({
     audioList: [], // 音频列表
     
     // 裁剪器相关数据
-    showCropper: false
+    showCropper: false,
+    // 猫咪关系相关数据
+    relatedCatsList: []
   },
 
-  onLoad: function (options) { },
+  onLoad: function (options) {
+    // 加载相关猫咪数据用于回显
+    this.loadRelatedCats();
+  },
+
+  // 加载相关猫咪数据
+  loadRelatedCats: function() {
+    // 在添加页面，初始时relatedCatsList为空数组，不需要加载
+    // 这个方法是为了保持与editCat页面的兼容性
+    console.log('addCat loadRelatedCats called, current relatedCatsList:', this.data.relatedCatsList);
+  },
 
   // 选择头像
   chooseAvatar: function() {
@@ -438,6 +450,19 @@ Page({
     });
   },
 
+  // 处理猫咪选择
+  onCatSelected: function(e) {
+    console.log('addCat onCatSelected called with:', e.detail);
+    const selectedCats = e.detail.cats;
+    const catIds = selectedCats.map(cat => cat._id);
+    console.log('setting relatedCatsList to:', selectedCats);
+    console.log('setting cat.relatedCats to:', catIds);
+    this.setData({ 
+      relatedCatsList: selectedCats, // 存储完整的猫咪对象用于回显
+      ['cat.relatedCats']: catIds     // 存储ID用于提交
+    });
+  },
+
   // 上传文件到服务器
   uploadFiles: function() {
     return new Promise((resolve, reject) => {
@@ -467,7 +492,7 @@ Page({
       // 强制上传所有图片到腾讯云COS
       this.data.imageList.forEach((image, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(image.url, `image_${index}`)
+          this.uploadToTencentCOS(image.url, 'image')
             .then(url => {
               if (!fileKeys.imageUrlList) fileKeys.imageUrlList = [];
               fileKeys.imageUrlList.push(url);
@@ -478,7 +503,7 @@ Page({
       // 强制上传所有视频到腾讯云COS
       this.data.videoList.forEach((video, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(video.url, `video_${index}`)
+          this.uploadToTencentCOS(video.url, 'video')
             .then(url => {
               if (!fileKeys.videoUrlList) fileKeys.videoUrlList = [];
               fileKeys.videoUrlList.push(url);
@@ -489,7 +514,7 @@ Page({
       // 强制上传所有音频到腾讯云COS
       this.data.audioList.forEach((audio, index) => {
         uploadPromises.push(
-          this.uploadToTencentCOS(audio.url, `audio_${index}`)
+          this.uploadToTencentCOS(audio.url, 'audio')
             .then(url => {
               if (!fileKeys.audioUrlList) fileKeys.audioUrlList = [];
               fileKeys.audioUrlList.push(url);
@@ -508,13 +533,21 @@ Page({
   },
 
   // 上传文件到腾讯云COS
-  uploadToTencentCOS: function(filePath, fileName) {
+  uploadToTencentCOS: function(filePath, fileType) {
 
     // 使用腾讯云 COS 客户端上传（选项 A：客户端使用后端签名）
     return new Promise((resolve, reject) => {
       const cosImagePath = app.globalData.cosImagePath;
       const fileExtension = filePath.substring(filePath.lastIndexOf('.')).toLowerCase();
-      const newFileName = `${cosImagePath}/${fileName}_${Date.now()}${fileExtension}`;
+      
+      // 获取猫咪名称，如果没有则使用默认名称
+      const catName = (this.data.cat && this.data.cat.name) ? this.data.cat.name.trim() : 'unknown_cat';
+      
+      // 生成随机码
+      const randomCode = Math.random().toString(36).substring(2, 8);
+      
+      // 使用新的命名格式：猫咪名称_<类型>_<随机码>
+      const newFileName = `${cosImagePath}/${catName}_${fileType}_${randomCode}${fileExtension}`;
 
   // 读取需要的 config（请在 app.globalData 中配置 cosBucket, cosRegion, cosSignUrl）
       const cosBucket = app.globalData.cosBucket;
