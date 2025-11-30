@@ -26,7 +26,21 @@ Page({
   onLoad: function (options) {
     // 检查用户是否为管理员
     this.checkAdministrator();
+    this.loadData();
+  },
+
+  // 新增方法：加载数据
+  loadData: function() {
+    // 重新加载数据时，先清空现有数据
+    this.setData({
+      cat: []
+    });
     this.loadMoreCat();
+  },
+
+  // 页面显示时刷新数据
+  onShow: function() {
+    this.loadData();
   },
 
   // 检查用户是否为管理员
@@ -44,10 +58,6 @@ Page({
         }
       }).catch(console.error);
     }).catch(console.error);
-  },
-
-  onLoad: function (options) {
-    this.loadMoreCat();
   },
 
   onReachBottom: function () {
@@ -75,4 +85,3 @@ Page({
     }).catch(console.error);
   },
 })
-

@@ -114,20 +114,20 @@
     <view class="image-upload-section">
       <view class="image-grid">
         <view wx:for="{{imageList}}" wx:key="index" class="image-item">
-          <image class="uploaded-image" src="{{item.url}}" mode="aspectFit" bindtap="previewImage" data-index="{{index}}"></image>
+          <image class="uploaded-image" src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"></image>
           <view class="image-actions">
             <view class="set-cover-btn" bindtap="setCoverImage" data-index="{{index}}">
               <text wx:if="{{cat.firstImageUrl === item.url}}">首图</text>
               <text wx:else>设为首图</text>
             </view>
-            <view class="remove-image-btn" bindtap="removeImage" data-index="{{index}}">删除</view>
+            <view class="remove-image-btn" bindtap="removeImage" data-index="{{index}}">✕</view>
           </view>
         </view>
         <view wx:if="{{imageList.length < 5}}" class="upload-button" bindtap="chooseImage">
           <text>+</text>
         </view>
       </view>
-      <view class="upload-hint">最多可上传5张图片，首图将作为猫咪的主要展示图片</view>
+      <view class="upload-hint">最多可上传5张图片</view>
     </view>
   </view>
 

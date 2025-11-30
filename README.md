@@ -1,14 +1,19 @@
 # Ucats
 
+## 2025 11 30 更新
+1、增加了猫咪信息添加和编辑过程中的图片上传编辑功能、便于信息编辑
+2、图片支持压缩、头像裁剪
+3、优化了整体编辑页面
+
 <img src="README/image-20230105213501897.png" alt="image-20230105213501897" style="zoom:67%;" />
-
-
-
-<img src="README/image-20231006132954202.png" alt="image-20231006132954202" style="zoom:33%;" />
 
 <img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" />
 
+<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 33%;" />
 
+<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
+
+<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
 
 此小程序基于北大猫协源码开发，致敬原开发者Circle
 

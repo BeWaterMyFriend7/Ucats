@@ -188,6 +188,10 @@ function compressAvatarTo50KB(src, cropX = 0, cropY = 0, cropWidth = 0, cropHeig
         // 创建圆形裁剪
         const ctx = wx.createCanvasContext('compressCanvas');
         
+        // 先填充白色背景（确保圆形区域外是白色而不是透明）
+        ctx.setFillStyle('#ffffff');
+        ctx.fillRect(0, 0, canvasSize, canvasSize);
+        
         // 保存绘图上下文
         ctx.save();
         

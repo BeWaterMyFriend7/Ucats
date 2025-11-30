@@ -1018,6 +1018,15 @@ Page({
                   if (prevPage && prevPage.route && (prevPage.route.includes('catDetail') || prevPage.route.includes('detail'))) {
                     prevPage.onLoad && prevPage.onLoad({ _id: _id });
                   }
+                  // 如果上一页是列表页（index、colors、all等），触发数据刷新
+                  else if (prevPage && prevPage.route && (prevPage.route.includes('index') || prevPage.route.includes('colors') || prevPage.route.includes('all') || prevPage.route.includes('search'))) {
+                    // 触发列表页的onShow或onLoad方法来刷新数据
+                    if (prevPage.onShow) {
+                      prevPage.onShow();
+                    } else if (prevPage.onLoad) {
+                      prevPage.onLoad();
+                    }
+                  }
                 }
                 wx.navigateBack();
               }, 1500);

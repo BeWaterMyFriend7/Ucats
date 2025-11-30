@@ -66,8 +66,8 @@ App({
     cosSignUrl: "https://ucats-1306442357.cos.ap-nanjing.myqcloud.com/",
     cosImagePath: "Ucats_pic",
     usePermanentKey : true,
-    cosSecretId : '<your-cos-secret-id>',
-    cosSecretKey : '<your-cos-secret-key>',
+    cosSecretId : '<your cos secret id>',
+    cosSecretKey : '<your cos secret key>',
   },
   mpServerless
 })
