@@ -31,9 +31,7 @@ Page({
         currentTab: parseInt(options.currentTab),
       });
     }
-    this.loadMoreCat_fostered();
-    this.loadMoreCat_unknown();
-    this.loadMoreCat_dead();
+    this.loadData();
     const {
       result
     } = await app.mpServerless.user.getInfo();
@@ -58,6 +56,18 @@ Page({
       userId: result.user.userId,
       time: Date()
     }).then(res => { }).catch(console.error);
+  },
+
+  // 新增方法：加载所有标签页的数据
+  loadData: function() {
+    this.loadMoreCat_fostered();
+    this.loadMoreCat_unknown();
+    this.loadMoreCat_dead();
+  },
+
+  // 页面显示时刷新数据
+  onShow: function() {
+    this.loadData();
   },
 
   // 添加猫咪按钮点击事件
@@ -237,4 +247,6 @@ Page({
 
 
 })
+
+
 
