@@ -8,60 +8,121 @@ Page({
     relatedCatsId: [],
     photoArray: [],
     audioArr: [],
-    movieArray: []
+    movieArray: [],
+    // 添加管理员模式相关数据
+    isAdministrator: false,
+    currentMode: 'NORMAL',
+    MODES: {
+      NORMAL: 'NORMAL',
+      ADMIN: 'ADMIN'
+    }
   },
 
   onLoad: function (options) {
     _id = options._id;
+    // 更新管理员状态和模式
+    this.setData({
+      isAdministrator: app.globalData.isAdministrator,
+      currentMode: app.globalData.currentMode,
+      MODES: app.globalData.MODES
+    });
+    
+    // 查询时过滤已软删除的数据
     app.mpServerless.db.collection('ucats').find({
       _id: _id,
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {}).then(res => {
       this.setData({
         cat: res.result[0],
       });
     }).then(res => {
-      if (this.data.cat.addPhotoNumber > 0) {
-        for (var photoNum = 1; photoNum <= this.data.cat.addPhotoNumber; ++photoNum) {
-          this.setData({
-            photoArray: this.data.photoArray.concat(photoNum),
-          });
-        }
-      }
-      if (this.data.cat.movieNums > 0) {
-        for (var movieNum = 1; movieNum <= this.data.cat.movieNums; ++movieNum) {
-          this.setData({
-            movieArray: this.data.movieArray.concat(movieNum),
-          });
-        }
-      }
-      if (this.data.cat.audioNumber > 0) {
-        console.log(encodeURIComponent(this.data.cat.name))
-        for (var audioNum = 1; audioNum <= this.data.cat.audioNumber; ++audioNum) {
-          var audioTemp = {
+      // 处理音频数据
+      if (this.data.cat.audioUrlList && this.data.cat.audioUrlList.length > 0) {
+        const audioArr = this.data.cat.audioUrlList.map((url, index) => {
+          return {
             bl: false,
-            src: this.data.url + encodeURIComponent(this.data.cat.name) + audioNum.toString() + ".m4a"
-          }
-          this.setData({
-            audioArr: this.data.audioArr.concat(audioTemp),
-          });
-        }
-      }
-      if (this.data.cat.relatedCats) {
-        var relatedCats = this.data.cat.relatedCats.split(" ")
-        for (var i = 0; i < relatedCats.length; ++i) {
-          app.mpServerless.db.collection('ucats').find({
-            name: relatedCats[i],
-          }, {}).then(res => {
-            this.setData({
-              relatedCatsId: this.data.relatedCatsId.concat(res.result),
-            });
-          })
-        }
+            src: url
+          };
+        });
         this.setData({
-          relatedCats: relatedCats,
+          audioArr: audioArr
         });
       }
+      // 处理相关猫咪数据
+      if (this.data.cat.relatedCats) {
+        let relatedIds = [];
+        
+        if (typeof this.data.cat.relatedCats === 'string') {
+          // 老格式：根据名称查找猫咪（兼容老数据）
+          const catNames = this.data.cat.relatedCats.split(" ").filter(name => name.trim());
+          const promises = catNames.map(name => 
+            app.mpServerless.db.collection('ucats').find({
+              name: name.trim(),
+              isDeleted: { $ne: true }
+            }).then(res => res.result)
+          );
+          
+          Promise.all(promises).then(results => {
+            const allCats = results.flat();
+            this.setData({
+              relatedCatsId: allCats,
+            });
+          });
+        } else if (Array.isArray(this.data.cat.relatedCats)) {
+          // 新格式：根据ID查找猫咪
+          relatedIds = this.data.cat.relatedCats;
+          const promises = relatedIds.map(id => 
+            app.mpServerless.db.collection('ucats').find({
+              _id: id,
+              isDeleted: { $ne: true }
+            }).then(res => res.result.length > 0 ? res.result[0] : null)
+          );
+          
+          Promise.all(promises).then(results => {
+            const validCats = results.filter(cat => cat !== null);
+            this.setData({
+              relatedCatsId: validCats,
+            });
+          });
+        }
+      }
     });
+  },
+
+  // 每次页面显示时更新管理员状态
+  onShow: function() {
+    // 更新管理员状态和模式
+    this.setData({
+      isAdministrator: app.globalData.isAdministrator,
+      currentMode: app.globalData.currentMode,
+      MODES: app.globalData.MODES
+    });
+  },
+
+  // 检查用户是否为管理员
+  // checkAdministrator: function() {
+  //   const that = this;
+  //   app.mpServerless.user.getInfo().then(res => {
+  //     const userId = res.result.user.userId;
+  //     app.mpServerless.db.collection('ucats_admin').find({
+  //       userId: userId
+  //     }).then(res => {
+  //       if (res.result.length > 0) {
+  //         that.setData({
+  //           isAdministrator: true
+  //         });
+  //       }
+  //     }).catch(console.error);
+  //   }).catch(console.error);
+  // },
+
+  // 编辑猫咪信息
+  editCat: function() {
+    if (this.data.isAdministrator && this.data.currentMode === 'ADMIN') {
+      wx.navigateTo({
+        url: '/pages/editCat/editCat?_id=' + _id,
+      });
+    }
   },
 
   //音频播放  
@@ -184,3 +245,6 @@ Page({
 })
 //创建audio控件
 const myaudio = wx.createInnerAudioContext();
+
+
+

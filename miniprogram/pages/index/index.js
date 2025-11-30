@@ -13,6 +13,10 @@ Page({
     navbar: ['在校', '毕业', '休学', '喵星'],
     currentTab: 0,
     url: app.globalData.url,
+    // 添加全局变量到页面数据中
+    isAdministrator: app.globalData.isAdministrator,
+    currentMode: app.globalData.currentMode,
+    MODES: app.globalData.MODES
   },
 
   navbarTap: function (e) {
@@ -43,6 +47,10 @@ Page({
       if (res.result.length > 0) {
         app.globalData.isAdministrator = true
         app.globalData.Administrator = res.result[0].name
+        // 更新页面数据
+        this.setData({
+          isAdministrator: true
+        })
       }
     }).catch(console.error);
 
@@ -52,21 +60,18 @@ Page({
     }).then(res => { }).catch(console.error);
   },
 
-  editCat(e) {
-    const _id = e.currentTarget.dataset._id;
-    if (app.globalData.isAdministrator) {
-      wx.navigateTo({
-        url: '/pages/editCat/editCat?_id=' + _id,
-      });
-    }
-  },
-
-  imageTap(e) {
-    if (app.globalData.isAdministrator) {
+  // 添加猫咪按钮点击事件
+  addCat: function() {
+    if (this.data.isAdministrator && this.data.currentMode === this.data.MODES.ADMIN) {
       wx.navigateTo({
         url: '/pages/addCat/addCat'
       })
     }
+  },
+
+  // 头像点击事件（移除添加猫咪功能）
+  imageTap: function(e) {
+    // 移除长按添加猫咪功能，仅保留跳转到搜索页面的功能
   },
 
   onReachBottom: function () {
@@ -82,55 +87,58 @@ Page({
   },
 
   loadMoreCat_fostered() {
-    const fostered_cat = this.data.fostered_cat;
     app.mpServerless.db.collection('ucats').find({
-      status: "送养",
+      status: '送养',
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {
-      sort: { deliveryTime: -1 },
-      skip: fostered_cat.length,
+      sort: {
+        lastEditTime: -1
+      },
       limit: 20,
     }).then(res => {
       const {
         result: data
       } = res;
       this.setData({
-        fostered_cat: fostered_cat.concat(data)
+        fostered_cat: data
       });
     }).catch(console.error);
   },
 
   loadMoreCat_unknown() {
-    const unknown_cat = this.data.unknown_cat;
     app.mpServerless.db.collection('ucats').find({
-      status: "失踪",
+      status: '失踪',
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {
-      sort: { missingTime: -1 },
-      skip: unknown_cat.length,
+      sort: {
+        lastEditTime: -1
+      },
       limit: 20,
     }).then(res => {
       const {
         result: data
       } = res;
       this.setData({
-        unknown_cat: unknown_cat.concat(data)
+        unknown_cat: data
       });
     }).catch(console.error);
   },
 
   loadMoreCat_dead() {
-    const dead_cat = this.data.dead_cat;
     app.mpServerless.db.collection('ucats').find({
-      status: "离世",
+      status: '离世',
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {
-      sort: { deathTime: -1 },
-      skip: dead_cat.length,
+      sort: {
+        lastEditTime: -1
+      },
       limit: 20,
     }).then(res => {
       const {
         result: data
       } = res;
       this.setData({
-        dead_cat: dead_cat.concat(data)
+        dead_cat: data
       });
     }).catch(console.error);
   },
@@ -160,10 +168,6 @@ Page({
 
   // 转发到朋友圈
   onShareTimeline: function (res) {
-    if (ops.from === 'button') {
-      // 来自页面内转发按钮
-      console.log(ops.target)
-    }
     return {
       path: 'pages/index/index?currentTab=' + this.data.currentTab,
       success: function (res) {
@@ -195,11 +199,42 @@ Page({
   preview(e){
     console.log(e.currentTarget.dataset.src)
     let currentUrl = e.currentTarget.dataset.src
+    // 修复未定义的 imgList，只预览当前图片
     wx.previewImage({
       current: currentUrl,
-      urls: this.data.imgList
+      urls: [currentUrl]  // 只预览当前图片
     })
   },
   
+  // 在页面中增加切换按钮的逻辑
+   toggleAdminMode: function () {
+      if(this.data.isAdministrator){
+          // 切换模式
+      app.globalData.currentMode = 
+        app.globalData.currentMode === app.globalData.MODES.NORMAL 
+          ? app.globalData.MODES.ADMIN 
+          : app.globalData.MODES.NORMAL;
+
+      // 更新页面数据
+      this.setData({
+        currentMode: app.globalData.currentMode
+      });
+
+      // 提示用户
+      wx.showToast({
+        title: app.globalData.currentMode === app.globalData.MODES.ADMIN 
+          ? "已进入管理员模式" 
+          : "已退出管理员模式",
+        icon: 'none',
+      });
+      } else {
+        wx.showToast({
+          title: '无权限切换模式',
+          icon: 'none'
+        });
+      }
+    }
+
 
 })
+

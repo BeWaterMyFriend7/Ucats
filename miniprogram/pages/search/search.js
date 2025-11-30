@@ -12,7 +12,8 @@ Page({
     app.mpServerless.db.collection('ucats').find({
       name: {
         $regex: this.data.inputValue
-      }
+      },
+      isDeleted: { $ne: true } // 不显示已软删除的数据
     }, {
       sort: {
         lastEditTime: -1
@@ -72,3 +73,4 @@ Page({
     }
   },
 })
+

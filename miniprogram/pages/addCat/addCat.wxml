@@ -1,185 +1,291 @@
-<view class="head1">
-  <text user-select="true">名字</text>
-</view>
-<input data-key='name' bindinput="inputText" class="edit-input" value="{{cat.name}}" />
+<view class="page-container">
+  <!-- 基本信息 -->
+  <view class="form-section">
+    <view class="form-title">基本信息</view>
+    
+    <view class="head1">
+      <text user-select="true">名字</text>
+    </view>
+    <input data-key='name' bindinput="inputText" class="edit-input" value="{{cat.name}}" placeholder="请输入猫咪名字" />
 
-<view class="head1">
-  <text user-select="true">昵称</text>
-</view>
-<input data-key='nickName' bindinput="inputText" class="edit-input" value="{{cat.nickName}}" />
-
-<view class="head1">
-  <text user-select="true">外貌</text>
-</view>
-<input data-key='appearance' bindinput="inputText" class="edit-input" value="{{cat.appearance}}" />
-
-<view class="head1">
-  <text user-select="true">毛色分类</text>
-</view>
-<picker mode="selector" data-key='classification' bindchange="bindPickerChange" range="{{pickers.classification}}" value='{{picker_selected.classification}}'>
-  <view class="edit-input">
-    {{cat.classification}}
+    <view class="head1">
+      <text user-select="true">昵称</text>
+    </view>
+    <input data-key='nickName' bindinput="inputText" class="edit-input" value="{{cat.nickName}}" placeholder="请输入猫咪昵称" />
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">毛色</text>
-</view>
-<input data-key='furColor' bindinput="inputText" class="edit-input" value="{{cat.furColor}}" />
+  <!-- 头像上传 -->
+  <view class="form-section">
+    <view class="form-title">头像</view>
+    
+    <!-- 裁剪预览界面 -->
+    <view wx:if="{{showCropper}}" class="cropper-overlay">
+      <my-cropper 
+        bind:close="hideCropper" 
+        imageSrc="{{originalAvatarUrl}}" 
+        cutRatio="{{1}}"
+        bind:confirm="onCropConfirm"
+      ></my-cropper>
+    </view>
 
-<view class="head1">
-  <text user-select="true">性别</text>
-</view>
-<picker mode="selector" data-key='gender' bindchange="bindPickerChange" range="{{pickers.gender}}" value='{{picker_selected.gender}}'>
-  <view class="edit-input">
-    {{cat.gender}}
+    <view class="avatar-upload-container">
+      <view class="avatar-preview" bindtap="chooseAvatar">
+        <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="avatar-placeholder">
+          <text>点击上传头像</text>
+        </view>
+      </view>
+    </view>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">是否寻找领养</text>
-</view>
-<picker mode="selector" data-key='isAdoption' bindchange="bindPickerChange" range="{{pickers.isAdoption}}" value='{{picker_selected.isAdoption}}'>
-  <view class="edit-input">
-    {{cat.isAdoption}}
+  <!-- 外貌特征 -->
+  <view class="form-section">
+    <view class="form-title">外貌特征</view>
+    
+    <view class="head1">
+      <text user-select="true">外貌</text>
+    </view>
+    <input data-key='appearance' bindinput="inputText" class="edit-input" value="{{cat.appearance}}" placeholder="请描述猫咪外貌特征" />
+
+    <view class="head1">
+      <text user-select="true">毛色分类</text>
+    </view>
+    <picker mode="selector" data-key='classification' bindchange="bindPickerChange" range="{{pickers.classification}}" value='{{picker_selected.classification}}'>
+      <view class="edit-input">
+        {{cat.classification || '请选择毛色分类'}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">毛色</text>
+    </view>
+    <input data-key='furColor' bindinput="inputText" class="edit-input" value="{{cat.furColor}}" placeholder="请输入毛色描述" />
+
+    <view class="head1">
+      <text user-select="true">性别</text>
+    </view>
+    <picker mode="selector" data-key='gender' bindchange="bindPickerChange" range="{{pickers.gender}}" value='{{picker_selected.gender}}'>
+      <view class="edit-input">
+        {{cat.gender || '请选择性别'}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">是否寻找领养</text>
+    </view>
+    <picker mode="selector" data-key='isAdoption' bindchange="bindPickerChange" range="{{pickers.isAdoption}}" value='{{picker_selected.isAdoption}}'>
+      <view class="edit-input">
+        {{cat.isAdoption || '请选择领养状态'}}
+      </view>
+    </picker>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">下方加图片数</text>
-</view>
-<picker mode="selector" data-key='addPhotoNumber' bindchange="bindPickerChange" range="{{pickers.addPhotoNumber}}" value='{{picker_selected.addPhotoNumber}}'>
-  <view class="edit-input">
-    {{cat.addPhotoNumber}}
+  <!-- 首图上传 -->
+  <view class="form-section">
+    <view class="form-title">首图（背景图）</view>
+    
+    <view class="cover-upload-section">
+      <view wx:if="{{firstImageUrl}}" class="cover-image-container">
+        <image class="cover-image" src="{{firstImageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{firstImageUrl}}"></image>
+        <view class="cover-actions">
+          <view class="change-cover-btn" bindtap="chooseFirstImage">更换首图</view>
+          <view class="remove-cover-btn" bindtap="removeFirstImage">删除首图</view>
+        </view>
+      </view>
+      <view wx:else class="upload-button" bindtap="chooseFirstImage">
+        <text>+</text>
+      </view>
+      <view class="upload-hint">首图将作为猫咪的主要展示图片</view>
+    </view>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">下方加视频数</text>
-</view>
-<picker mode="selector" data-key='movieNums' bindchange="bindPickerChange" range="{{pickers.movieNums}}" value='{{picker_selected.movieNums}}'>
-  <view class="edit-input">
-    {{cat.movieNums}}
+  <!-- 图片列表 -->
+  <view class="form-section">
+    <view class="form-title">图片列表</view>
+    
+    <view class="image-upload-section">
+      <view class="image-grid">
+        <view wx:for="{{imageList}}" wx:key="index" class="image-item">
+          <image class="uploaded-image" src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}"></image>
+          <view class="image-actions">
+            <view class="set-cover-btn" bindtap="setCoverImage" data-index="{{index}}">
+              <text wx:if="{{firstImageUrl === item.url}}">首图</text>
+              <text wx:else>设为首图</text>
+            </view>
+            <view class="remove-image-btn" bindtap="removeImage" data-index="{{index}}">✕</view>
+          </view>
+        </view>
+        <view wx:if="{{imageList.length < 5}}" class="upload-button" bindtap="chooseImage">
+          <text>+</text>
+        </view>
+      </view>
+      <view class="upload-hint">最多可上传5张图片</view>
+    </view>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">加音频数</text>
-</view>
-<picker mode="selector" data-key='audioNumber' bindchange="bindPickerChange" range="{{pickers.audioNumber}}" value='{{picker_selected.audioNumber}}'>
-  <view class="edit-input">
-    {{cat.audioNumber}}
+  <!-- 视频上传 -->
+  <view class="form-section">
+    <view class="form-title">视频</view>
+    
+    <view class="video-upload-section">
+      <view class="video-grid">
+        <view wx:for="{{videoList}}" wx:key="index" class="video-item">
+          <video class="uploaded-video" src="{{item.url}}" controls></video>
+          <view class="remove-video-btn" bindtap="removeVideo" data-index="{{index}}">删除</view>
+        </view>
+        <view wx:if="{{videoList.length < 2}}" class="upload-button" bindtap="chooseVideo">
+          <text>+</text>
+        </view>
+      </view>
+      <view class="upload-hint">最多可上传2个视频</view>
+    </view>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">状况</text>
+<!-- 音频上传区域 -->
+<!-- <view class="head1">
+  <text user-select="true">音频</text>
 </view>
-<picker mode="selector" data-key='status' bindchange="bindPickerChange" range="{{pickers.status}}">
-  <view class="edit-input">
-    {{cat.status}}
+<view class="audio-upload-section">
+  <view class="audio-list">
+    <view wx:for="{{audioList}}" wx:key="index" class="audio-item">
+      <view class="audio-info">
+        <text>音频{{index + 1}}</text>
+      </view>
+      <view class="remove-audio-btn" bindtap="removeAudio" data-index="{{index}}">删除</view>
+    </view>
+    <view wx:if="{{audioList.length < 3}}" class="upload-button" bindtap="chooseAudio">
+      <text>+</text>
+    </view>
   </view>
-</picker>
+  <view class="upload-hint">最多可上传3个音频文件</view>
+</view> -->
 
-<view class="head1">
-  <text user-select="true">绝育情况</text>
-</view>
-<picker mode="selector" data-key='isSterilization' bindchange="bindPickerChange" range="{{pickers.isSterilization}}" value='{{picker_selected.isSterilization}}'>
-  <view class="edit-input">
-    {{cat.isSterilization}}
+  <!-- 健康状况 -->
+  <view class="form-section">
+    <view class="form-title">健康状况</view>
+    
+    <view class="head1">
+      <text user-select="true">状况</text>
+    </view>
+    <picker mode="selector" data-key='status' bindchange="bindPickerChange" range="{{pickers.status}}">
+      <view class="edit-input">
+        {{cat.status || '请选择健康状况'}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">绝育情况</text>
+    </view>
+    <picker mode="selector" data-key='isSterilization' bindchange="bindPickerChange" range="{{pickers.isSterilization}}" value='{{picker_selected.isSterilization}}'>
+      <view class="edit-input">
+        {{cat.isSterilization || '请选择绝育情况'}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">绝育时间</text>
+    </view>
+    <input data-key='sterilizationTime' bindinput="inputText" class="edit-input" value="{{cat.sterilizationTime}}" placeholder="请输入绝育时间" />
+
+    <view class="head1">
+      <text user-select="true">疫苗情况</text>
+    </view>
+    <picker mode="selector" data-key='vaccine' bindchange="bindPickerChange" range="{{pickers.vaccine}}" value='{{picker_selected.vaccine}}'>
+      <view class="edit-input">
+        {{cat.vaccine || '请选择疫苗情况'}}
+      </view>
+    </picker>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">绝育时间</text>
-</view>
-<input data-key='sterilizationTime' bindinput="inputText" class="edit-input" value="{{cat.sterilizationTime}}" />
+  <!-- 生活信息 -->
+  <view class="form-section">
+    <view class="form-title">生活信息</view>
+    
+    <view class="head1">
+      <text user-select="true">出没地点</text>
+    </view>
+    <input data-key='location' bindinput="inputText" class="edit-input" value="{{cat.location}}" placeholder="请输入出没地点" />
 
-<view class="head1">
-  <text user-select="true">疫苗情况</text>
-</view>
-<picker mode="selector" data-key='vaccine' bindchange="bindPickerChange" range="{{pickers.vaccine}}" value='{{picker_selected.vaccine}}'>
-  <view class="edit-input">
-    {{cat.vaccine}}
+    <view class="head1">
+      <text user-select="true">出生时间</text>
+    </view>
+    <input data-key='birthTime' bindinput="inputText" class="edit-input" value="{{cat.birthTime}}" placeholder="请输入出生时间" />
+
+    <view class="head1">
+      <text user-select="true">性格</text>
+    </view>
+    <picker mode="selector" data-key='character' bindchange="bindPickerChange" range="{{pickers.character}}" value='{{picker_selected.character}}'>
+      <view class="edit-input">
+        {{cat.character || '请选择性格特征'}}
+      </view>
+    </picker>
   </view>
-</picker>
 
-<view class="head1">
-  <text user-select="true">出没地点</text>
-</view>
-<input data-key='location' bindinput="inputText" class="edit-input" value="{{cat.location}}" />
+  <!-- 时间记录 -->
+  <view class="form-section">
+    <view class="form-title">时间记录</view>
+    
+    <view class="head1">
+      <text user-select="true">第一次目击时间</text>
+    </view>
+    <input data-key='firstSightingTime' bindinput="inputText" class="edit-input" value="{{cat.firstSightingTime}}" placeholder="请输入第一次目击时间" />
 
-<view class="head1">
-  <text user-select="true">出生时间</text>
-</view>
-<input data-key='birthTime' bindinput="inputText" class="edit-input" value="{{cat.birthTime}}" />
+    <view class="head1">
+      <text user-select="true">失踪时间</text>
+    </view>
+    <input data-key='missingTime' bindinput="inputText" class="edit-input" value="{{cat.missingTime}}" placeholder="请输入失踪时间" />
 
-<view class="head1">
-  <text user-select="true">性格</text>
-</view>
-<picker mode="selector" data-key='character' bindchange="bindPickerChange" range="{{pickers.character}}" value='{{picker_selected.character}}'>
-  <view class="edit-input">
-    {{cat.character}}
+    <view class="head1">
+      <text user-select="true">送养时间</text>
+    </view>
+    <picker mode="date" fields="month" data-key='deliveryTime' bindchange="bindDateChange" value='{{cat.deliveryTime}}'>
+      <view class="edit-input">
+        {{cat.deliveryTime}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">离世时间</text>
+    </view>
+    <picker mode="date" fields="month" data-key='deathTime' bindchange="bindDateChange" value='{{cat.deathTime}}'>
+      <view class="edit-input">
+        {{cat.deathTime}}
+      </view>
+    </picker>
+
+    <view class="head1">
+      <text user-select="true">离世原因</text>
+    </view>
+    <input data-key='deathReason' bindinput="inputText" class="edit-input" value="{{cat.deathReason}}" />
+
+    <view class="head1">
+      <text user-select="true">更多</text>
+    </view>
+    <input data-key='moreInformation' bindinput="inputText" class="edit-input" value="{{cat.moreInformation}}" />
+
+    <view class="head1">
+      <text user-select="true">备注</text>
+    </view>
+    <input data-key='notes' bindinput="inputText" class="edit-input" value="{{cat.notes}}" />
+
+    <view class="head1">
+      <text user-select="true">关系</text>
+    </view>
+    <input data-key='relationship' bindinput="inputText" class="edit-input" value="{{cat.relationship}}" />
+
+    <view class="head1">
+      <text user-select="true">相关的猫</text>
+    </view>
+    <cat-selector selected-cats="{{relatedCatsList}}" bind:catselected="onCatSelected"></cat-selector>
   </view>
-</picker>
-
-<view class="head1">
-  <text user-select="true">第一次目击时间</text>
-</view>
-<input data-key='firstSightingTime' bindinput="inputText" class="edit-input" value="{{cat.firstSightingTime}}" />
-
-<view class="head1">
-  <text user-select="true">失踪时间</text>
-</view>
-<input data-key='missingTime' bindinput="inputText" class="edit-input" value="{{cat.missingTime}}" />
-
-<view class="head1">
-  <text user-select="true">送养时间</text>
-</view>
-<picker mode="date" fields="month" data-key='deliveryTime' bindchange="bindDateChange" value='{{cat.deliveryTime}}'>
-  <view class="edit-input">
-    {{cat.deliveryTime}}
-  </view>
-</picker>
-
-<view class="head1">
-  <text user-select="true">离世时间</text>
-</view>
-<picker mode="date" fields="month" data-key='deathTime' bindchange="bindDateChange" value='{{cat.deathTime}}'>
-  <view class="edit-input">
-    {{cat.deathTime}}
-  </view>
-</picker>
-
-<view class="head1">
-  <text user-select="true">离世原因</text>
-</view>
-<input data-key='deathReason' bindinput="inputText" class="edit-input" value="{{cat.deathReason}}" />
-
-<view class="head1">
-  <text user-select="true">更多</text>
-</view>
-<input data-key='moreInformation' bindinput="inputText" class="edit-input" value="{{cat.moreInformation}}" />
-
-<view class="head1">
-  <text user-select="true">备注</text>
-</view>
-<input data-key='notes' bindinput="inputText" class="edit-input" value="{{cat.notes}}" />
-
-<view class="head1">
-  <text user-select="true">关系</text>
-</view>
-<input data-key='relationship' bindinput="inputText" class="edit-input" value="{{cat.relationship}}" />
-
-<view class="head1">
-  <text user-select="true">相关的猫，用一个空格隔开</text>
-</view>
-<input data-key='relatedCats' bindinput="inputText" class="edit-input" value="{{cat.relatedCats}}" />
-
-<!-- </view> -->
 
 <text> \n </text>
 
 <button class='primary' bindtap='upload' style="margin: 0;">确定提交</button>
 
 <text> \n </text>
+
+<!-- 隐藏的画布用于图片处理 -->
+<canvas class="hidden-canvas" canvas-id="avatarCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
+<canvas class="hidden-canvas" canvas-id="compressCanvas" style="position: fixed; top: -9999px; left: -9999px; width: 1024px; height: 1024px;"></canvas>
+</view>

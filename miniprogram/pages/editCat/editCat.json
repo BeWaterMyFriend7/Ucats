@@ -1,4 +1,7 @@
 {
-  "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "my-cropper": "@dw/wx-cropper",
+    "cat-selector": "../../components/catSelector/catSelector"
+  },
+  "navigationBarTitleText": "编辑猫咪"
 }

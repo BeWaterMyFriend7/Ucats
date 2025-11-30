@@ -1,11 +1,18 @@
 <view style="display:flex; justify-content:center; align-items:center;">
-  <image mode="widthFix" bindtap='previewImage' class="cat_image" data-src="{{url}}{{cat.name}}.jpg" src="{{url}}{{cat.name}}.jpg" style="width: 90%;">
+  <!-- 使用数据库中存储的首图URL（背景图） -->
+  <image wx:if="{{cat.firstImageUrl}}" mode="widthFix" bindtap='previewImage' class="cat_image" data-src="{{cat.firstImageUrl}}" src="{{cat.firstImageUrl}}" style="width: 90%;"></image>
+  <!-- 如果没有首图URL，则使用默认方式 -->
+  <image wx:else mode="widthFix" bindtap='previewImage' class="cat_image" data-src="{{url}}{{cat.name}}.jpg" src="{{url}}{{cat.name}}.jpg" style="width: 90%;">
   </image>
 </view>
 
 <view class="itemname1">
-  <view style='flex-shrink:0; box-sizing:border-box; width:350rpx;'>
+  <view style='flex-shrink:0; box-sizing:border-box; width:350rpx; display: flex; align-items: center;'>
     <view class="cat-card">{{cat.name}}</view>
+    <!-- 管理员编辑按钮 -->
+    <view wx:if="{{isAdministrator && currentMode === MODES.ADMIN}}" class="edit-container">
+      <button class="edit-detail-btn" bindtap="editCat">编辑</button>
+    </view>
   </view>
   <view style='flex-shrink:0; box-sizing:border-box; width:350rpx;'>
     <!-- 猫叫声 -->
@@ -171,29 +178,33 @@
   </view>
 </view>
 
-<view wx:if="{{relatedCatsId}}" class="itemname1">
-  <navigator style='margin-right:20rpx;' wx:for="{{relatedCatsId}}" wx:key="_id" url="/pages/catDetail/catDetail?_id={{relatedCatsId[index]._id}}">
-    <view style='flex-shrink:0; box-sizing:border-box; width:90rpx;'>
-      <image style="margin-top: 10rpx; width:90rpx;height:90rpx;" src="{{url}}{{relatedCatsId[index].name}}.png"></image>
-      <view style="text-align: center; margin-bottom: 40rpx; color:#353535;"> \n {{relatedCatsId[index].name}} </view>
-    </view>
-  </navigator>
+<view wx:if="{{relatedCatsId.length > 0}}" class="related-cats-section">
+  <view class="section-title">相关猫咪</view>
+  <view class="related-cats-container">
+    <navigator wx:for="{{relatedCatsId}}" wx:key="_id" class="related-cat-item" url="/pages/catDetail/catDetail?_id={{item._id}}">
+      <view class="related-cat-avatar-container">
+        <image wx:if="{{item.avatarUrl}}" class="related-cat-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+        <image wx:else class="related-cat-avatar" src="{{url}}{{item.name}}.png" mode="aspectFill"></image>
+      </view>
+      <text class="related-cat-name">{{item.name}}</text>
+    </navigator>
+  </view>
 </view>
 
 <text> \n </text>
 
-<block wx:for="{{photoArray}}" wx:key="_id">
+<!-- 显示从数据库中获取的图片 -->
+<block wx:for="{{cat.imageUrlList}}" wx:key="index">
   <view style="display:flex; justify-content:center; align-items:center;">
-    <image mode="widthFix" class="cat_image" bindtap='previewImage' src="{{url}}{{cat.name}}{{photoArray[index]}}.jpg" data-src="{{url}}{{cat.name}}{{photoArray[index]}}.jpg"  style="width: 90%;">
-    </image>
+    <image mode="widthFix" class="cat_image" bindtap='previewImage' src="{{item}}" data-src="{{item}}" style="width: 90%;"></image>
   </view>
   <text> \n </text>
 </block>
 
-<block wx:for="{{movieArray}}" wx:key="_id">
+<!-- 显示从数据库中获取的视频 -->
+<block wx:for="{{cat.videoUrlList}}" wx:key="index">
   <view style="display:flex; justify-content:center; align-items:center;">
-    <video mode="widthFix" class="cat_video" src="{{url}}{{cat.name}}{{movieArray[index]}}.mp4" style="width: 90%;">
-    </video>
+    <video mode="widthFix" class="cat_video" src="{{item}}" style="width: 90%;"></video>
   </view>
   <text> \n </text>
 </block>

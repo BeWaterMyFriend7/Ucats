@@ -1,0 +1,66 @@
+<view class="cat-selector-container">
+  <!-- 已选择的猫咪显示 -->
+  <view class="selected-cats-container">
+    <view wx:for="{{selectedCatsDisplay}}" wx:key="_id" class="selected-cat-item">
+      <image class="selected-cat-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+      <text class="selected-cat-name">{{item.name}}</text>
+      <view class="remove-cat-btn" catchtap="removeSelectedCat" data-id="{{item._id}}">×</view>
+    </view>
+  </view>
+  
+  <!-- 添加猫咪按钮 -->
+  <view class="add-cat-btn" bindtap="showCatSelector">
+    <text class="add-icon">+</text>
+  </view>
+
+  <!-- 猫咪选择弹窗 -->
+  <view wx:if="{{showSelector}}" class="selector-overlay" catchtap="hideCatSelector">
+    <view class="selector-content" catchtap="">
+      <view class="selector-header">
+        <text class="selector-title">选择相关猫咪</text>
+        <view class="close-btn" bindtap="hideCatSelector">×</view>
+      </view>
+
+      <!-- 搜索框 -->
+      <view class="search-container" catchtap="stopPropagation">
+        <input 
+          class="search-input" 
+          placeholder="搜索猫咪名称" 
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          bindfocus="onSearchFocus"
+        />
+      </view>
+
+      <!-- 猫咪列表 -->
+      <scroll-view class="cat-list-container" scroll-y>
+        <view wx:if="{{loading}}" class="loading-text">加载中...</view>
+        <view wx:elif="{{filteredCats.length === 0}}" class="empty-text">暂无猫咪数据</view>
+        <view wx:else>
+          <view 
+            wx:for="{{filteredCats}}" 
+            wx:key="_id" 
+            class="cat-item"
+            catchtap="toggleCatSelection"
+            data-id="{{item._id}}"
+          >
+            <image class="cat-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+            <view class="cat-info">
+              <text class="cat-name">{{item.name}}</text>
+              <text class="cat-desc">{{item.appearance || ''}}</text>
+            </view>
+            <view class="check-icon {{item.isSelected ? 'checked' : ''}}">
+              <text wx:if="{{item.isSelected}}" class="check-mark">✓</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 底部按钮 -->
+      <view class="selector-footer">
+        <view class="cancel-btn" bindtap="hideCatSelector">取消</view>
+        <view class="confirm-btn" bindtap="confirmSelection">确定</view>
+      </view>
+    </view>
+  </view>
+</view>
