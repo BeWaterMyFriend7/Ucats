@@ -226,3 +226,15 @@
   top: -9999px;
   left: -9999px;
 }
+
+/* 名字唯一性提示样式 */
+.name-unique-hint {
+  font-size: 20rpx;
+  color: #0969da;
+  text-align: left;
+  margin-top: 4rpx;
+  margin-bottom: 16rpx;
+  line-height: 1.4;
+  padding: 0 20rpx;
+  opacity: 0.8;
+}

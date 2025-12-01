@@ -98,7 +98,7 @@
   </view>
 
   <view style="display:flex; justify-content:center; align-items:center;">
-  <image class='img' mode="widthFix" src='/pages/images/QR1.png' bindtap="preview" data-src="/pages/images/qr_GKMXjpg.jpg" style="width: 70%">
+  <image class='img' mode="widthFix" src='/pages/images/qr_GKMXjpg.jpg' bindtap="preview" data-src="/pages/images/qr_GKMXjpg.jpg" style="width: 70%">
  </image>
  </view>
  <view class="contentyd">点击并长按上面二维码图片反馈新的猫猫信息</view>

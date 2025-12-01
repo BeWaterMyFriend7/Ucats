@@ -20,7 +20,7 @@ Page({
     })
   },
   //转发功能
-  onShareAppMessage: function () {
+  onShareAppMessage: function (res) {
     let users = wx.getStorageSync('user');
     if (res.from === 'button') { }
     return {
@@ -40,6 +40,28 @@ Page({
      
     }
   })
+  },
+
+  // 复制GitHub地址
+  copyGithubUrl: function(e) {
+    const url = e.currentTarget.dataset.url;
+    wx.setClipboardData({
+      data: url,
+      success: function(res) {
+        wx.showToast({
+          title: '复制成功',
+          icon: 'success',
+          duration: 2000
+        });
+      },
+      fail: function(err) {
+        wx.showToast({
+          title: '复制失败',
+          icon: 'error',
+          duration: 2000
+        });
+      }
+    });
   },
 
   // 跳转小程序

@@ -72,3 +72,23 @@ page{
     line-height: 35rpx;
     text-align: center;  
   }
+
+  .github-container {
+    margin: 20rpx 40rpx;
+  }
+
+  .github-label {
+    font-size: 30rpx;
+    color: #353535;
+    line-height: 40rpx;
+    display: inline;
+  }
+
+  .github-url {
+    font-size: 30rpx;
+    color: #007bff;
+    word-break: break-all;
+    line-height: 40rpx;
+    display: inline;
+    text-decoration: underline;
+  }
