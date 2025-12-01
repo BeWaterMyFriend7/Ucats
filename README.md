@@ -9,11 +9,11 @@
 
 <img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" />
 
-<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 33%;" />
+<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 23%;" />
 
-<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
+<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:23%;" />
 
-<img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:33%;" />![image-20251130181648126](README/image-20251130181648126.png)
+<img src="README/image-20251130181648126.png" alt="image-20251130181648126" style="zoom:23%;" />
 
 此小程序基于北大猫协源码开发，致敬原开发者Circle
 
@@ -21,10 +21,15 @@
 
 小程序视频教程： https://www.bilibili.com/video/BV16b4y1S7PN
 
+## 后管功能使用
+1、管理员进入页面后 在首页右下角点击进入管理员模式，可以选择添加猫咪或者点击猫咪详情进行编辑，体验编辑功能及图片编辑功能  
+2、管理员逻辑和北大猫咪原本逻辑一致
+3、图片编辑原理：用户上传图片，压缩图片，点击提交，将相关图片提交到腾讯云云存储，等待上传图片上传成功后，将相关路径存储到阿里云数据库。
+4、图片头像裁剪利用 @dw/wx-cropper 组件
 
 
 ## TODO 
-
+- 分包 找回关系图
 - 自动化绘制关系图 [需要进一步考虑]
 
 
