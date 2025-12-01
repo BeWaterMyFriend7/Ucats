@@ -5,11 +5,7 @@
 2、图片支持压缩、头像裁剪  
 3、优化了整体编辑页面   
 
-<img src="README/image-20230105213501897.png" alt="image-20230105213501897" style="zoom:67%;" /><img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" />
-
-<img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom: 5%;" /><img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:5%;" />
-
-<img src="README/image-20251130181648126.png" alt="image-20251130181648126" style="zoom:5%;" />
+<img src="README/image-20230105213501897.png" alt="image-20230105213501897" style="zoom:67%;" /><img src="README/image-20230105213534443.png" alt="image-20230105213534443" style="zoom:67%;" /><img src="README/image-20251130181529133.png" alt="image-20251130181529133" style="zoom:1%;" /> <img src="README/image-20251130181624862.png" alt="image-20251130181624862" style="zoom:1%;" /><img src="README/image-20251130181648126.png" alt="image-20251130181648126" style="zoom:1%;" />
 
 此小程序基于北大猫协源码开发，致敬原开发者Circle
 
