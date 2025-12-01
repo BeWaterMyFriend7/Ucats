@@ -7,6 +7,7 @@
       <text user-select="true">名字</text>
     </view>
     <input data-key='name' bindinput="inputText" class="edit-input" value="{{cat.name}}" placeholder="请输入猫咪名字" />
+    <view class="name-unique-hint">名称尽量保持唯一，避免出现关联错误。</view>
 
     <view class="head1">
       <text user-select="true">昵称</text>

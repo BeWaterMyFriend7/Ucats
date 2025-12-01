@@ -7,8 +7,28 @@
       </image>
     </view>
     <view class="itemname1">
-      <view style='flex-shrink:0; box-sizing:border-box; width:350rpx;'>
-        <view class="cat-card">{{cat.name}}</view>
+      <view style='flex-shrink:0; box-sizing:border-box; width:450rpx;'>
+        <!-- 默认显示状态 -->
+        <view wx:if="{{!isEditingName}}" class="cat-name-display-container">
+          <view class="cat-name-display">{{cat.name || '未命名'}}</view>
+          <view class="edit-name-btn" bindtap="startEditName">
+            <text class="edit-icon">✏️</text>
+          </view>
+        </view>
+        
+        <!-- 编辑状态 -->
+        <view wx:else class="cat-name-edit-container">
+          <input class="cat-name-input" value="{{tempName}}" bindinput="onNameInput" placeholder="请输入猫咪名字" focus="{{isEditingName}}" />
+          <view class="name-actions">
+            <view class="confirm-name-btn" bindtap="confirmEditName">
+              <text class="confirm-icon">✓</text>
+            </view>
+            <view class="cancel-name-btn" bindtap="cancelEditName">
+              <text class="cancel-icon">✕</text>
+            </view>
+          </view>
+          <view class="name-warning-hint">修改名称可能会影响猫咪关系的展示，请谨慎修改！</view>
+        </view>
       </view>
     </view>
   </view>

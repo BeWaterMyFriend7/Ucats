@@ -31,7 +31,11 @@ Page({
     // 裁剪器相关数据
     showCropper: false,
     // 猫咪关系相关数据
-    relatedCatsList: []
+    relatedCatsList: [],
+    
+    // 名字编辑相关数据
+    isEditingName: false,
+    tempName: ''
   },
 
   onLoad: function (options) {
@@ -957,6 +961,7 @@ Page({
 
               // 第四步：将相关信息上传至阿里云数据库
               const updateData = {
+                name: this.data.cat.name || '', // 添加名字字段
                 addPhotoNumber: fileKeys.imageUrlList.length + (fileKeys.firstImageUrl ? 1 : 0),
                 movieNums: fileKeys.videoUrlList.length,
                 audioNumber: fileKeys.audioUrlList.length,
@@ -1142,6 +1147,56 @@ Page({
     const value = e.detail.value;
     this.setData({
       ['cat.' + key]: value
+    });
+  },
+
+  // 开始编辑名字
+  startEditName() {
+    this.setData({
+      isEditingName: true,
+      tempName: this.data.cat.name || ''
+    });
+  },
+
+  // 名字输入处理
+  onNameInput(e) {
+    const value = e.detail.value;
+    this.setData({
+      tempName: value
+    });
+  },
+
+  // 确认编辑名字
+  confirmEditName() {
+    const tempName = this.data.tempName.trim();
+    
+    if (!tempName) {
+      wx.showToast({
+        title: '名字不能为空',
+        icon: 'error',
+        duration: 1500
+      });
+      return;
+    }
+
+    this.setData({
+      'cat.name': tempName,
+      isEditingName: false,
+      tempName: ''
+    });
+
+    wx.showToast({
+      title: '名字已修改',
+      icon: 'success',
+      duration: 1500
+    });
+  },
+
+  // 取消编辑名字
+  cancelEditName() {
+    this.setData({
+      isEditingName: false,
+      tempName: ''
     });
   },
 })

@@ -85,9 +85,13 @@
   <view class="head2">2023年1月</view>
   <view class="body"><text class="bodybold">Ucats小程序重新开发</text>，将目前活跃在果壳的大部分猫咪登记入册。并增加了猫猫关系新版块，同时更新了logo。</view>
   <text> \n</text>
+
+  <view class="head2">2025年11月</view>
+  <view class="body">Ucats 小程序费了很大力气，针对<text class="bodybold">管理后台做了重构</text>，支持图片的编辑和上传，极大便利了后续猫咪的增删改查工作。</view>
+  <text> \n</text>
   
   <view class="head2">未来在路上</view>
-  <view class="body">[果壳流浪动物救助]方面，我们会一直进行下去，争取早日完成所有果壳流浪动物的NTR。
+  <view class="body">[果壳流浪动物救助]方面，我们会一直进行下去，争取早日完成所有果壳流浪动物的TNR。
     <text> \n </text>
   [小程序]方面，由于开发人员精力有限，前端技术也并不是很熟悉，因此暂定月更。</view>
 
@@ -124,7 +128,7 @@
 <text> \n </text>
 <view class="body">Ucats，国科大简称<text class="bodybold">UCAS</text>和猫咪<text class="bodybold">Cat</text>组合而成，寓意 国科大的猫咪们。
   <text> \n\n </text>
-其中字母 T 增加了两只猫猫耳朵，耳朵上部剪平，<text class="bodybold">代表流浪动物的NTR</text>。</view>
+其中字母 T 增加了两只猫猫耳朵，耳朵上部剪平，<text class="bodybold">代表流浪动物的TNR</text>。</view>
 
 <text> \n </text>
 
@@ -152,8 +156,14 @@
 
 </view>
 
-<view class="body">此小程序基于北大猫协小程序开发，可在 GitHub 上搜索「北大猫协」，配有教学视频，简单易用。致敬原作者Circle </view>
-
+<view class="github-container">
+  <text class="github-label">此小程序基于北大猫协小程序开发，配有教学视频，简单易用。致敬原作者Circle,北大猫协地址：</text>
+  <text class="github-url" bindtap="copyGithubUrl" data-url="https://gitee.com/circlelq/yan-yuan-mao-su-cha-shou-ce">https://gitee.com/circlelq/yan-yuan-mao-su-cha-shou-ce</text>
+</view>
+<view class="github-container">
+  <text class="github-label">本项目github地址：</text>
+  <text class="github-url" bindtap="copyGithubUrl" data-url="https://github.com/BeWaterMyFriend7/Ucats">https://github.com/BeWaterMyFriend7/Ucats</text>
+</view>
 
 <text> \n </text>
 

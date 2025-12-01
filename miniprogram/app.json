@@ -13,7 +13,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "北大猫咪图鉴",
+    "navigationBarTitleText": "Ucats",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
